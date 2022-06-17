@@ -4,3 +4,6 @@
 [submodule "Vulpine/external/glfw"]
 	path = Vulpine/external/glfw
 	url = https://github.com/glfw/glfw
+[submodule "Vulpine/external/imgui"]
+	path = Vulpine/external/imgui
+	url = https://github.com/Shylexx/imgui-docking
