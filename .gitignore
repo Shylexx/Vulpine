@@ -1,2 +1,7 @@
 # build folder
 build/
+out/
+
+# ide folders
+.vs/
+.vscode/
