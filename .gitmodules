@@ -1,0 +1,6 @@
+[submodule "Vulpine/external/glm"]
+	path = Vulpine/external/glm
+	url = https://github.com/g-truc/glm
+[submodule "Vulpine/external/glfw"]
+	path = Vulpine/external/glfw
+	url = https://github.com/glfw/glfw

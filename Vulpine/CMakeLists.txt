@@ -3,6 +3,10 @@ project(Vulpine VERSION 0.0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 
+# add external libraries
+add_subdirectory(external/glm)
+add_subdirectory(external/glfw)
+
 set(VULPINE_HEADERS
     include/Vulpine/Core/Entry.h
     include/Vulpine/Core/GameApp.h
@@ -18,8 +22,15 @@ add_library(${PROJECT_NAME} STATIC
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC
-    ${CMAKE_CURRENT_LIST_DIR}/include
+	$<INSTALL_INTERFACE:include>
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+	glm
+	glfw
 )
 
-# $<INSTALL_INTERFACE:include>
-# $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+target_link_libraries(${PROJECT_NAME}
+    PUBLIC
+	glm
+	glfw
+)
+
