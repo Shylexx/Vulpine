@@ -1,15 +1,16 @@
 #ifndef __GAMEAPP_H__
 #define __GAMEAPP_H__
 
+
 int main(int argc, char **argv);
 
 namespace Vulpine
 {
-    class GameApp
+    class App
     {
     public:
-        GameApp();
-        virtual ~GameApp();
+        App();
+        virtual ~App();
 
         void Init();
         void Update();
@@ -22,18 +23,18 @@ namespace Vulpine
 
         static void PrintHelloWorld();
 
-        static GameApp &GetInstance() { return *s_Instance; }
+        static App &GetInstance() { return *s_Instance; }
 
     private:
         bool m_Running = true;
         bool m_Minimized = false;
 
     private:
-        static GameApp *s_Instance;
+        static App *s_Instance;
         friend int ::main(int argc, char **argv);
     };
 
-    GameApp *CreateApp();
+    App *CreateApp();
 }
 
 #endif
