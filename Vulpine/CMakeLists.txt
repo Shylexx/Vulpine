@@ -11,18 +11,27 @@ add_subdirectory(external/glad)
 
 
 set(VULPINE_HEADERS
+    include/Vulpine.h
+    include/vppch.h
     include/Vulpine/Core/Entry.h
     include/Vulpine/Core/App.h
-	include/Vulpine/Core/Window.h
-	include/Vulpine/Scene/Scene.h
-	include/Vulpine/Scene/Layer.h
+    include/Vulpine/Core/Window.h
+    include/Vulpine/Scene/Scene.h
+    include/Vulpine/Scene/Layer.h
+    include/Vulpine/ImGui/ImGuiApp.h
+    include/Vulpine/ImGui/ImGuiLayer.h
+    include/Vulpine/ImGui/ImGuiScene.h
 )
 
 set(VULPINE_SOURCES
+    src/vppch.cpp
     src/Vulpine/Core/App.cpp
-	src/Vulpine/Core/Window.cpp
-	src/Vulpine/Scene/Scene.cpp
-	src/Vulpine/Scene/Layer.cpp
+    src/Vulpine/Core/Window.cpp
+    src/Vulpine/Scene/Scene.cpp
+    src/Vulpine/Scene/Layer.cpp
+    src/Vulpine/ImGui/ImGuiApp.cpp
+    src/Vulpine/ImGui/ImGuiLayer.cpp
+    src/Vulpine/ImGui/ImGuiScene.cpp
 )
 
 add_library(${PROJECT_NAME} STATIC
@@ -47,4 +56,13 @@ target_link_libraries(${PROJECT_NAME}
 	ImGui
 	glad
 )
+
+target_compile_definitions(${PROJECT_NAME}
+    PUBLIC GLFW_INCLUDE_NONE
+)
+
+target_precompile_headers(${PROJECT_NAME}
+    PRIVATE include/vppch.h
+)
+	
 
