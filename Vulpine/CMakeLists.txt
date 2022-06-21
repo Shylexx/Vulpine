@@ -21,6 +21,7 @@ set(VULPINE_HEADERS
     include/Vulpine/ImGui/ImGuiApp.h
     include/Vulpine/ImGui/ImGuiLayer.h
     include/Vulpine/ImGui/ImGuiScene.h
+    include/Vulpine/Render/GraphicsContext.h
 )
 
 set(VULPINE_SOURCES
@@ -32,6 +33,7 @@ set(VULPINE_SOURCES
     src/Vulpine/ImGui/ImGuiApp.cpp
     src/Vulpine/ImGui/ImGuiLayer.cpp
     src/Vulpine/ImGui/ImGuiScene.cpp
+    src/Vulpine/Render/GraphicsContext.cpp
 )
 
 add_library(${PROJECT_NAME} STATIC
