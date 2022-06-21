@@ -12,11 +12,11 @@ namespace Vulpine
         App();
         virtual ~App();
 
-        void Update(float deltaTime);
-        void Render();
-        void Shutdown();
+        virtual void Update(float deltaTime) {};
+        virtual void Render() {};
+        virtual void Shutdown() {};
 
-        void Run();
+        virtual void Run();
 
         void CloseApp();
 

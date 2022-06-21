@@ -1,18 +1,17 @@
-#include <Vulpine/Core/App.h>
+#include <Vulpine/ImGui/ImGuiApp.h>
 #include <Vulpine/Core/Entry.h>
 
 #include <iostream>
 
 #include "Editor.h"
 
-class SandboxApp : public Vulpine::App
+class SandboxApp : public Vulpine::ImGuiApp
 {
 public:
     Editor editor;
 
     SandboxApp()
     {
-        App::App();
         editor.RenderEditor();
 
         // Planned Future API
@@ -21,7 +20,6 @@ public:
 
     ~SandboxApp()
     {
-        App::~App();
     }
 };
 
