@@ -23,7 +23,7 @@ namespace Vulpine
 		Window(const WindowProperties& props);
 		virtual ~Window();
 
-		virtual void Update(float deltaTime) = 0;
+		virtual void Update(float deltaTime);
 
 		unsigned int GetWidth() const { return m_Props.Width; }
 		unsigned int GetHeight() const { return m_Props.Height; }
