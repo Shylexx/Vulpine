@@ -9,32 +9,20 @@ add_subdirectory(external/glfw)
 add_subdirectory(external)
 add_subdirectory(external/glad)
 
-# add OpenGL
-find_package(OpenGL REQUIRED)
-
-# imgui sources
-set(IMGUI_SOURCES
-	external/imgui/imgui.cpp
-	external/imgui/imgui_draw.cpp
-	external/imgui/imgui_demo.cpp
-	external/imgui/imgui_tables.cpp
-	external/imgui/imgui_widgets.cpp
-	external/imgui/backends/imgui_impl_glfw.cpp
-	external/imgui/backends/imgui_impl_opengl3.cpp
-	external/imgui/imgui.h
-	external/imgui/backends/imgui_impl_glfw.h
-	external/imgui/backends/imgui_impl_opengl3.h
-)
 
 set(VULPINE_HEADERS
     include/Vulpine/Core/Entry.h
     include/Vulpine/Core/App.h
 	include/Vulpine/Core/Window.h
+	include/Vulpine/Scene/Scene.h
+	include/Vulpine/Scene/Layer.h
 )
 
 set(VULPINE_SOURCES
     src/Vulpine/Core/App.cpp
 	src/Vulpine/Core/Window.cpp
+	src/Vulpine/Scene/Scene.cpp
+	src/Vulpine/Scene/Layer.cpp
 )
 
 add_library(${PROJECT_NAME} STATIC

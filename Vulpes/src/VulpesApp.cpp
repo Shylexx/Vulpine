@@ -12,11 +12,16 @@ public:
 
     SandboxApp()
     {
+        App::App();
         editor.RenderEditor();
+
+        // Planned Future API
+        // LoadStartupScene();
     }
 
     ~SandboxApp()
     {
+        App::~App();
     }
 };
 

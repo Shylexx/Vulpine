@@ -33,9 +33,13 @@ int main(int argc, char **argv)
     Vulpine::App::PrintHelloWorld();
 
     
-
+    // Init
     //auto app = Vulpine::CreateApp();
+    
+    // Runtime
     //app->Run();
+ 
+    // Cleanup
     //delete app;
 
     // Setup window
@@ -60,8 +64,8 @@ int main(int argc, char **argv)
 #else
     // GL 3.0 + GLSL 130
     const char* glsl_version = "#version 130";
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
     //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
 #endif
@@ -115,6 +119,10 @@ int main(int argc, char **argv)
     bool show_demo_window = true;
     bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+
+    std::cout << "OpenGL Ver: " << glGetString(GL_VERSION) << std::endl;
+
 
     // Main loop
     while (!glfwWindowShouldClose(window))
@@ -179,6 +187,7 @@ int main(int argc, char **argv)
 
         glfwSwapBuffers(window);
     }
+    
 
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();

@@ -5,7 +5,10 @@
 
 namespace Vulpine
 {
-    App::App() = default;
+    App::App() {
+        //s_Instance = this;
+    }
+
     App::~App() = default;
 
     void App::PrintHelloWorld()
@@ -13,15 +16,20 @@ namespace Vulpine
         std::cout << "Hello from GameApp" << std::endl;
     }
 
+    void App::DebugLogProps()
+    {
+        
+    }
+
     void App::Run()
     {
-        // Init();
+        // Game Loop
         // while (m_Running)
         // {
-        //     Update();
+        //     Update(deltaTime);
         //     Render();
         // }
-        // Shutdown();
+
         /*if (!glfwInit())
         {
             std::cout << "GLFW Init Failed" << std::endl;

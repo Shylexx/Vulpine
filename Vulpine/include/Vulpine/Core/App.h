@@ -12,8 +12,7 @@ namespace Vulpine
         App();
         virtual ~App();
 
-        void Init();
-        void Update();
+        void Update(float deltaTime);
         void Render();
         void Shutdown();
 
@@ -22,6 +21,7 @@ namespace Vulpine
         void CloseApp();
 
         static void PrintHelloWorld();
+        static void DebugLogProps();
 
         static App &GetInstance() { return *s_Instance; }
 
