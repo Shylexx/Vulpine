@@ -5,8 +5,11 @@
 
 namespace Vulpine
 {
+    App* App::s_Instance;
+    Window* App::s_Window;
+
     App::App() {
-        //s_Instance = this;
+        s_Instance = this;
     }
 
     App::~App() = default;
@@ -24,11 +27,15 @@ namespace Vulpine
     void App::Run()
     {
         // Game Loop
-        // while (m_Running)
-        // {
-        //     Update(deltaTime);
-        //     Render();
-        // }
+        float time = (float)glfwGetTime();
+        float deltaTime = time - m_LastFrameTime;
+        m_LastFrameTime = time;
+
+        while (m_Running)
+        {
+            Update(deltaTime);
+
+        }
 
         /*if (!glfwInit())
         {
@@ -53,6 +60,11 @@ namespace Vulpine
 
         glfwDestroyWindow(window);
         glfwTerminate();*/
+    }
+
+    void App::Update(float deltaTime)
+    {
+        m_CurrentScene->Update(deltaTime);
     }
 
     void App::CloseApp()

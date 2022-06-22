@@ -2,6 +2,7 @@
 #define __GAMEAPP_H__
 
 #include "Vulpine/Core/Window.h"
+#include "Vulpine/Scene/Scene.h"
 
 int main(int argc, char **argv);
 
@@ -13,7 +14,7 @@ namespace Vulpine
         App();
         virtual ~App();
 
-        virtual void Update(float deltaTime) {};
+        virtual void Update(float deltaTime);
         virtual void Render() {};
         virtual void Shutdown() {};
 
@@ -25,15 +26,18 @@ namespace Vulpine
         static void DebugLogProps();
 
         static App &GetInstance() { return *s_Instance; }
-        static Window& GetWindow() { return *m_Window; }
+        static Window& GetWindow() { return *s_Window; }
 
     private:
         bool m_Running = true;
         bool m_Minimized = false;
-
+        float m_LastFrameTime = 0;
+        
     private:
         static App *s_Instance;
-        static Window* m_Window;
+        static Window* s_Window;
+        Scene* m_CurrentScene;
+        
         friend int ::main(int argc, char **argv);
     };
 

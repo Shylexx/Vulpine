@@ -9,7 +9,7 @@ namespace Vulpine {
 		Layer(const std::string& name = "Layer");
 		virtual ~Layer() = default;
 
-		virtual void OnUpdate(float deltaTime) {};
+		virtual void Update(float deltaTime) {};
 		virtual void onEvent() {};
 	protected:
 		std::string m_DebugName;
