@@ -30,14 +30,15 @@ int main(int argc, char **argv)
     Vulpine::App::PrintHelloWorld();
 
     // Init
+    std::cout << "App Initialisation" << std::endl;
     auto app = Vulpine::CreateApp();
-    app->Init();
 
     // Runtime
+    std::cout << "App Runtime" << std::endl;
     app->Run();
 
     // Cleanup
-    app->Cleanup();
+    std::cout << "App Cleanup" << std::endl;
     delete app;
 
     return 0;

@@ -29,7 +29,7 @@ namespace Vulpine {
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		App& app = App::GetInstance();
-		io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());
+		//io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

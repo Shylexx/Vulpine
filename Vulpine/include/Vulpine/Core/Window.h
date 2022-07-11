@@ -12,15 +12,15 @@ namespace Vulpine
 		uint32_t Width;
 		uint32_t Height;
 
-		WindowProperties(const std::string& title = "Vulpine App",
-			uint32_t width = 1600,
-			uint32_t height = 900)
+		WindowProperties(const std::string &title = "Vulpine App",
+						 uint32_t width = 1600,
+						 uint32_t height = 900)
 			: Title(title), Width(width), Height(height) {}
 	};
 	class Window
 	{
 	public:
-		Window(const WindowProperties& props);
+		Window(const WindowProperties &props);
 		virtual ~Window();
 
 		virtual void Update(float deltaTime);
@@ -28,14 +28,15 @@ namespace Vulpine
 		unsigned int GetWidth() const { return m_Props.Width; }
 		unsigned int GetHeight() const { return m_Props.Height; }
 
-		virtual void* GetWindow() const { return m_Window; }
+		virtual void *GetWindow() const { return m_Window; }
 
 	private:
-		void Init(const WindowProperties& props);
+		void Init(const WindowProperties &props);
 		void Cleanup();
+
 	private:
 		WindowProperties m_Props;
-		GLFWwindow* m_Window;
+		GLFWwindow *m_Window;
 	};
 }
 

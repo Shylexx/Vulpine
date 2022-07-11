@@ -15,8 +15,8 @@ namespace Vulpine
         virtual ~App();
 
         virtual void Update(float deltaTime);
-        virtual void Render() {};
-        virtual void Shutdown() {};
+        virtual void Render(){};
+        virtual void Shutdown(){};
 
         virtual void Run();
 
@@ -26,19 +26,19 @@ namespace Vulpine
         static void DebugLogProps();
 
         static App &GetInstance() { return *s_Instance; }
-        static Window& GetWindow() { return *s_Window; }
-
+        Window* m_Window;
     private:
         bool m_Running = true;
         bool m_Minimized = false;
         float m_LastFrameTime = 0;
-        
+
     private:
         static App *s_Instance;
-        static Window* s_Window;
-        Scene* m_CurrentScene;
         
+        Scene *m_CurrentScene;
+
         friend int ::main(int argc, char **argv);
+        WindowProperties m_WindowProps;
     };
 
     App *CreateApp();
