@@ -9,6 +9,14 @@ add_subdirectory(external/glfw)
 add_subdirectory(external)
 add_subdirectory(external/glad)
 
+# Add Vulkan
+find_package(Vulkan REQUIRED)
+
+if(NOT Vulkan_FOUND)
+    message(FATAL_ERROR "Could not find Vulkan library!")
+else()
+    message(STATUS "Using vulkan lib at: ${Vulkan_LIBRARIES}")
+endif()
 
 set(VULPINE_HEADERS
     include/Vulpine.h
@@ -43,20 +51,22 @@ add_library(${PROJECT_NAME} STATIC
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC
-	$<INSTALL_INTERFACE:include>
-	$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-	glm
-	glfw
-	external/imgui
-	external/glad/include
+    $<INSTALL_INTERFACE:include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+    glm
+    glfw
+    external/imgui
+    external/glad/include
+    ${Vulkan_INCLUDE_DIRS}
 )
 
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
-	glm
-	glfw
-	ImGui
-	glad
+    glm
+    glfw
+    ImGui
+    glad
+    ${Vulkan_LIBRARIES}
 )
 
 target_compile_definitions(${PROJECT_NAME}
@@ -66,5 +76,3 @@ target_compile_definitions(${PROJECT_NAME}
 target_precompile_headers(${PROJECT_NAME}
     PRIVATE include/vppch.h
 )
-	
-
