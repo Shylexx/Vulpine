@@ -11,7 +11,7 @@ namespace Vulpine
     {
         s_Instance = this;
         m_Running = true;
-        m_Window = new Window(m_WindowProps);
+        m_Window = std::make_unique<Window>(m_WindowProps);
     }
 
     App::~App()
@@ -35,10 +35,19 @@ namespace Vulpine
         std::cout << "m_Running: " << m_Running << std::endl;
         while (m_Running)
         {
+
             time = (float)glfwGetTime();
             float deltaTime = time - m_LastFrameTime;
             m_LastFrameTime = time;
             Update(deltaTime);
+
+            glfwSwapBuffers(static_cast<GLFWwindow *>(m_Window->GetWindow()));
+            glfwPollEvents();
+
+            if (glfwWindowShouldClose(static_cast<GLFWwindow *>(m_Window->GetWindow())))
+            {
+                m_Running = false;
+            }
         }
 
         /*if (!glfwInit())
@@ -69,7 +78,7 @@ namespace Vulpine
     void App::Update(float deltaTime)
     {
         m_Window->Update(deltaTime);
-        //m_CurrentScene->Update(deltaTime);
+        // m_CurrentScene->Update(deltaTime);
         std::cout << "Update" << std::endl;
     }
 

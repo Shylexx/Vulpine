@@ -1,6 +1,8 @@
 #ifndef __GAMEAPP_H__
 #define __GAMEAPP_H__
 
+#include <memory>
+
 #include "Vulpine/Core/Window.h"
 #include "Vulpine/Scene/Scene.h"
 
@@ -26,15 +28,20 @@ namespace Vulpine
         static void DebugLogProps();
 
         static App &GetInstance() { return *s_Instance; }
-        Window* m_Window;
+        Window *GetWindow() const
+        {
+            return m_Window.get();
+        }
+
     private:
         bool m_Running = true;
         bool m_Minimized = false;
         float m_LastFrameTime = 0;
+        std::unique_ptr<Window> m_Window;
 
     private:
         static App *s_Instance;
-        
+
         Scene *m_CurrentScene;
 
         friend int ::main(int argc, char **argv);
