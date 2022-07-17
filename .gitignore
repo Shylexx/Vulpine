@@ -5,3 +5,7 @@ out/
 # ide folders
 .vs/
 .vscode/
+
+
+# Lang Server settings
+.cache/
