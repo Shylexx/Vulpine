@@ -34,10 +34,14 @@ namespace Vulpine
 		{
 			std::cout << "Window Creation Failed" << std::endl;
 		}
+
+
 	}
 
 	void Window::Cleanup()
 	{
+		glfwDestroyWindow(m_Window);
+		glfwTerminate();
 	}
 
 	void Window::Update(float deltaTime)

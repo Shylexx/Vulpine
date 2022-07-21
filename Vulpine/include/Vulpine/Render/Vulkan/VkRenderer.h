@@ -16,6 +16,9 @@ public:
 	VulkanRenderer();
 	~VulkanRenderer();
 
+	void Init();
+	void Cleanup();
+
 private:
 	VulpineDevice m_Device;
 };
