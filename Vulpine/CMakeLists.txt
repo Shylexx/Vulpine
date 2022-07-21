@@ -29,7 +29,8 @@ set(VULPINE_HEADERS
     include/Vulpine/ImGui/ImGuiApp.h
     include/Vulpine/ImGui/ImGuiLayer.h
     include/Vulpine/ImGui/ImGuiScene.h
-    include/Vulpine/Render/GraphicsContext.h
+		include/Vulpine/Render/Vulkan/VkRenderer.h
+		include/Vulpine/Render/Vulkan/VkDevice.h
 )
 
 set(VULPINE_SOURCES
@@ -41,7 +42,8 @@ set(VULPINE_SOURCES
     src/Vulpine/ImGui/ImGuiApp.cpp
     src/Vulpine/ImGui/ImGuiLayer.cpp
     src/Vulpine/ImGui/ImGuiScene.cpp
-    src/Vulpine/Render/GraphicsContext.cpp
+		src/Vulpine/Render/Vulkan/VkRenderer.cpp
+		src/Vulpine/Render/Vulkan/VkDevice.cpp
 )
 
 add_library(${PROJECT_NAME} STATIC
