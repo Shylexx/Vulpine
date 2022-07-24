@@ -4,24 +4,22 @@
 #include <Vulpine/Render/Vulkan/VkDevice.h>
 
 #include <vulkan/vulkan.h>
-#include <vulkan/vulkan_core.h>
-
 
 namespace Vulpine
 {
 
-class VulkanRenderer
-{
-public:
-	VulkanRenderer();
-	~VulkanRenderer();
+	class VulkanRenderer
+	{
+	public:
+		VulkanRenderer();
+		~VulkanRenderer();
 
-	void Init();
-	void Cleanup();
+		void Init();
+		void Cleanup();
 
-private:
-	VulpineDevice m_Device;
-};
+	private:
+		VulpineDevice m_Device;
+	};
 
 }
 #endif

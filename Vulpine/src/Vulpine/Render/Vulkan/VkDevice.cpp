@@ -1,9 +1,9 @@
 
 #include <Vulpine/Render/Vulkan/VkDevice.h>
 #include <stdexcept>
+#include <vector>
 #include <iostream>
 #include <vulkan/vulkan.h>
-
 
 // TO DO:
 // ADD VALIDATION LAYER AND DEBUG SUPPORT
@@ -11,12 +11,11 @@
 namespace Vulpine
 {
 
-static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
-			VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-			VkDebugUtilsMessageTypeFlagsEXT messageType,
-			const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
-			void* pUserData
-			)
+	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
+		VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+		VkDebugUtilsMessageTypeFlagsEXT messageType,
+		const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
+		void *pUserData)
 	{
 		std::cerr << "Validation Layer: " << pCallbackData->pMessage << std::endl;
 		return VK_FALSE;
@@ -33,7 +32,6 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 	{
 
 		vkDestroyDevice(m_VkDevice, nullptr);
-
 	}
 
 	void VulpineDevice::CreateVkInstance()
@@ -44,29 +42,28 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 		appInfo.pApplicationName = "Vulpine Application";
 		appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
 		appInfo.pEngineName = "Vulpine";
-		appInfo.engineVersion = VK_MAKE_VERSION(0,0,1);
+		appInfo.engineVersion = VK_MAKE_VERSION(0, 0, 1);
 		appInfo.apiVersion = VK_API_VERSION_1_3;
 
 		VkInstanceCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 		createInfo.pApplicationInfo = &appInfo;
 
-		//auto extensions = getReqExtensions();
-		//createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
-		//createInfo.ppEnabledExtensionNames = extensions.data();
-		
+		// auto extensions = getReqExtensions();
+		// createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
+		// createInfo.ppEnabledExtensionNames = extensions.data();
+
 		VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
 		// Wrap in If Statement based on debug mode
-		//createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-		//createInfo.ppEnabledLayerNames = validationLayers.data();
-		//populateDebugMessengerCreateInfo(debugCreateInfo);
-		//createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
-		
+		// createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+		// createInfo.ppEnabledLayerNames = validationLayers.data();
+		// populateDebugMessengerCreateInfo(debugCreateInfo);
+		// createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
+
 		createInfo.enabledLayerCount = 0;
 		createInfo.pNext = nullptr;
 
-
-		if(vkCreateInstance(&createInfo, nullptr, &m_VkInstance) != VK_SUCCESS)
+		if (vkCreateInstance(&createInfo, nullptr, &m_VkInstance) != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create Vulkan Instance");
 		}
@@ -74,22 +71,22 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 
 	void VulpineDevice::SetupDebugMessenger()
 	{
-		VkDebugUtilsMessengerCreateInfoEXT createInfo;
-		PopulateDebugMessengerCreateInfo(createInfo);
+		// VkDebugUtilsMessengerCreateInfoEXT createInfo;
+		// PopulateDebugMessengerCreateInfo(createInfo);
 
-		if(vkCreateDebugUtilsMessengerEXT(m_VkInstance, &createInfo, nullptr, &m_DebugMessenger) != VK_SUCCESS)
-		{
-			throw std::runtime_error("Failed to Create Debug Utils Messenger");
-		}
+		// if (vkCreateDebugUtilsMessengerEXT(m_VkInstance, &createInfo, nullptr, &m_DebugMessenger) != VK_SUCCESS)
+		// {
+		// 	throw std::runtime_error("Failed to Create Debug Utils Messenger");
+		// }
 	}
 
 	void VulpineDevice::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo)
 	{
 		createInfo = {};
 		createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-           createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-           createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-           createInfo.pfnUserCallback = debugCallback;
+		createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+		createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+		createInfo.pfnUserCallback = debugCallback;
 	}
 
 	void VulpineDevice::PickPhysicalDevice()
@@ -97,7 +94,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 		uint32_t deviceCount = 0;
 		vkEnumeratePhysicalDevices(m_VkInstance, &deviceCount, nullptr);
 
-		if(deviceCount == 0)
+		if (deviceCount == 0)
 		{
 			throw std::runtime_error("Failed to find GPU with Vulkan Support");
 		}
@@ -105,16 +102,16 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 		std::vector<VkPhysicalDevice> devices(deviceCount);
 		vkEnumeratePhysicalDevices(m_VkInstance, &deviceCount, devices.data());
 
-		for(const auto &device : devices)
+		for (const auto &device : devices)
 		{
-			if(IsPhysicalDeviceSuitable(device))
+			if (IsPhysicalDeviceSuitable(device))
 			{
 				m_VkPhysicalDevice = device;
 				break;
 			}
 		}
 
-		if(m_VkPhysicalDevice == VK_NULL_HANDLE)
+		if (m_VkPhysicalDevice == VK_NULL_HANDLE)
 		{
 			throw std::runtime_error("Failed to find a suitable GPU!");
 		}
@@ -138,14 +135,14 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 		vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
 
 		int i = 0;
-		for(const auto &queueFamily : queueFamilies)
+		for (const auto &queueFamily : queueFamilies)
 		{
-			if(queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+			if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
 			{
 				indices.graphicsFamily = i;
 			}
 
-			if(indices.isComplete())
+			if (indices.isComplete())
 			{
 				break;
 			}
@@ -180,7 +177,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 		createInfo.enabledExtensionCount = 0;
 		createInfo.enabledLayerCount = 0;
 
-		if(vkCreateDevice(m_VkPhysicalDevice, &createInfo, nullptr, &m_VkDevice) != VK_SUCCESS)
+		if (vkCreateDevice(m_VkPhysicalDevice, &createInfo, nullptr, &m_VkDevice) != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to Create Logical Device!");
 		}

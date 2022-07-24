@@ -3,6 +3,14 @@
 
 namespace Vulpine
 {
+
+	VulkanRenderer::VulkanRenderer()
+	{
+	}
+
+	VulkanRenderer::~VulkanRenderer()
+	{
+	}
 	void VulkanRenderer::Init()
 	{
 	}

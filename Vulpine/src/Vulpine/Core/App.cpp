@@ -33,6 +33,8 @@ namespace Vulpine
         // Game Loop
         float time = (float)glfwGetTime();
         std::cout << "m_Running: " << m_Running << std::endl;
+        m_Renderer = std::make_unique<VulkanRenderer>();
+        // Game Loop
         while (m_Running)
         {
 
@@ -79,7 +81,7 @@ namespace Vulpine
     {
         m_Window->Update(deltaTime);
         // m_CurrentScene->Update(deltaTime);
-        std::cout << "Update" << std::endl;
+        // std::cout << "Update" << std::endl;
     }
 
     void App::CloseApp()
