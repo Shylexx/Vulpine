@@ -24,8 +24,12 @@ namespace Vulpine
 		{
 			std::cout << "GLFW Init Failed" << std::endl;
 		}
-
-		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+		//Use For Vulkan
+		//glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+		// Use for OpenGL
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 		m_Window = glfwCreateWindow(m_Props.Width, m_Props.Height, m_Props.Title.c_str(), nullptr, nullptr);

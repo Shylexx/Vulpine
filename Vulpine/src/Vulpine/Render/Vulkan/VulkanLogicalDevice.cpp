@@ -1,9 +1,14 @@
 
-#include <Vulpine/Render/Vulkan/VkDevice.h>
+#include <Vulpine/Render/Vulkan/VkLogicalDevice.h>
+#include <Vulpine/Core/App.h>
 #include <stdexcept>
 #include <vector>
 #include <iostream>
+#include <cstdlib>
+#include <cstring>
 #include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
+
 
 // TO DO:
 // ADD VALIDATION LAYER AND DEBUG SUPPORT
@@ -20,7 +25,7 @@ namespace Vulpine
 		std::cerr << "Validation Layer: " << pCallbackData->pMessage << std::endl;
 		return VK_FALSE;
 	}
-	VulpineDevice::VulpineDevice()
+	VulkanLogicalDevice::VulkanLogicalDevice()
 	{
 		CreateVkInstance();
 		SetupDebugMessenger();
@@ -28,14 +33,19 @@ namespace Vulpine
 		CreateLogicalDevice();
 	}
 
-	VulpineDevice::~VulpineDevice()
+	VulkanLogicalDevice::~VulkanLogicalDevice()
 	{
 
 		vkDestroyDevice(m_VkDevice, nullptr);
 	}
 
-	void VulpineDevice::CreateVkInstance()
+	void VulkanLogicalDevice::CreateVkInstance()
 	{
+
+		if(App::GetInstance().debugMode() && !CheckValidationLayerSupport())
+		{
+			throw std::runtime_error("Cannot use Debug: Validation Layers not Available!");
+		}
 
 		VkApplicationInfo appInfo{};
 		appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -49,38 +59,40 @@ namespace Vulpine
 		createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 		createInfo.pApplicationInfo = &appInfo;
 
-		// auto extensions = getReqExtensions();
-		// createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
-		// createInfo.ppEnabledExtensionNames = extensions.data();
+		auto extensions = getReqExtensions();
+		createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
+		createInfo.ppEnabledExtensionNames = extensions.data();
 
 		VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
-		// Wrap in If Statement based on debug mode
-		// createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-		// createInfo.ppEnabledLayerNames = validationLayers.data();
-		// populateDebugMessengerCreateInfo(debugCreateInfo);
-		// createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
 
+		if(App::GetInstance().debugMode())
+		{
+		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+		createInfo.ppEnabledLayerNames = validationLayers.data();
+		PopulateDebugMessengerCreateInfo(debugCreateInfo);
+		createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
+		} else {
 		createInfo.enabledLayerCount = 0;
 		createInfo.pNext = nullptr;
-
+		}
 		if (vkCreateInstance(&createInfo, nullptr, &m_VkInstance) != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create Vulkan Instance");
 		}
 	}
 
-	void VulpineDevice::SetupDebugMessenger()
+	void VulkanLogicalDevice::SetupDebugMessenger()
 	{
-		// VkDebugUtilsMessengerCreateInfoEXT createInfo;
-		// PopulateDebugMessengerCreateInfo(createInfo);
+		VkDebugUtilsMessengerCreateInfoEXT createInfo;
+		PopulateDebugMessengerCreateInfo(createInfo);
 
-		// if (vkCreateDebugUtilsMessengerEXT(m_VkInstance, &createInfo, nullptr, &m_DebugMessenger) != VK_SUCCESS)
-		// {
-		// 	throw std::runtime_error("Failed to Create Debug Utils Messenger");
-		// }
+		if (vkCreateDebugUtilsMessengerEXT(m_VkInstance, &createInfo, nullptr, &m_DebugMessenger) != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to Create Debug Utils Messenger");
+		}
 	}
 
-	void VulpineDevice::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo)
+	void VulkanLogicalDevice::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo)
 	{
 		createInfo = {};
 		createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -89,7 +101,7 @@ namespace Vulpine
 		createInfo.pfnUserCallback = debugCallback;
 	}
 
-	void VulpineDevice::PickPhysicalDevice()
+	void VulkanLogicalDevice::PickPhysicalDevice()
 	{
 		uint32_t deviceCount = 0;
 		vkEnumeratePhysicalDevices(m_VkInstance, &deviceCount, nullptr);
@@ -117,14 +129,14 @@ namespace Vulpine
 		}
 	}
 
-	bool VulpineDevice::IsPhysicalDeviceSuitable(VkPhysicalDevice device)
+	bool VulkanLogicalDevice::IsPhysicalDeviceSuitable(VkPhysicalDevice device)
 	{
 		QueueFamilyIndices indices = FindQueueFamilies(device);
 
 		return indices.isComplete();
 	}
 
-	QueueFamilyIndices VulpineDevice::FindQueueFamilies(VkPhysicalDevice device)
+	QueueFamilyIndices VulkanLogicalDevice::FindQueueFamilies(VkPhysicalDevice device)
 	{
 		QueueFamilyIndices indices;
 
@@ -153,7 +165,7 @@ namespace Vulpine
 		return indices;
 	}
 
-	void VulpineDevice::CreateLogicalDevice()
+	void VulkanLogicalDevice::CreateLogicalDevice()
 	{
 		QueueFamilyIndices indices = FindQueueFamilies(m_VkPhysicalDevice);
 
@@ -184,4 +196,80 @@ namespace Vulpine
 
 		vkGetDeviceQueue(m_VkDevice, indices.graphicsFamily.value(), 0, &m_GraphicsQueue);
 	}
+
+	std::vector<const char*> VulkanLogicalDevice::getReqExtensions()
+	{
+		uint32_t glfwExtensionCount = 0;
+
+		const char **glfwExtensions;
+		glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+		std::vector<const char *> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+		if(App::GetInstance().debugMode())
+		{
+			extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+		}
+		return extensions;
+	}
+
+	bool VulkanLogicalDevice::CheckValidationLayerSupport()
+	{
+		uint32_t layerCount;
+    vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+
+    std::vector<VkLayerProperties> availableLayers(layerCount);
+    vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+
+    for (const char *layerName : validationLayers)
+    {
+        bool layerFound = false;
+        for (const auto &layerProperties : availableLayers)
+        {
+            if (strcmp(layerName, layerProperties.layerName) == 0)
+            {
+                layerFound = true;
+                break;
+            }
+        }
+
+        if (!layerFound)
+        {
+            return false;
+        }
+    }
+
+    return true;
+	}
+
+	//Debug Util Messenger Creation and Cleanup
+	VkResult VulkanLogicalDevice::CreateDebugUtilsMessengerEXT(
+			VkInstance instance,
+			const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,
+			const VkAllocationCallbacks *pAllocator,
+			VkDebugUtilsMessengerEXT *pDebugMessenger
+			)
+	{
+		auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
+		if(func != nullptr)
+		{
+			return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
+		}
+		else 
+		{
+			return VK_ERROR_EXTENSION_NOT_PRESENT;
+		}
+	}
+
+	void VulkanLogicalDevice::DestroyDebugUtilsMessengerEXT(
+			VkInstance instance,
+			VkDebugUtilsMessengerEXT debugMessenger,
+			const VkAllocationCallbacks *pAllocator
+			)
+	{
+		auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
+		if(func != nullptr)
+		{
+			func(instance, debugMessenger, pAllocator);
+		}
+	}
+
 }

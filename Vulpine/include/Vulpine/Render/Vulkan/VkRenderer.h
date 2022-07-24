@@ -1,9 +1,11 @@
 #ifndef __VK_RENDERER_H__
 #define __VK_RENDERER_H__
 
-#include <Vulpine/Render/Vulkan/VkDevice.h>
+#include <Vulpine/Render/Vulkan/VkDebugMessenger.h>
+#include <Vulpine/Render/Vulkan/VkInstance.h>
+#include <Vulpine/Render/Vulkan/VkLogicalDevice.h>
+#include <Vulpine/Render/Vulkan/VkPhysicalDevice.h>
 
-#include <vulkan/vulkan.h>
 
 namespace Vulpine
 {
@@ -18,7 +20,11 @@ namespace Vulpine
 		void Cleanup();
 
 	private:
-		VulpineDevice m_Device;
+		VulkanLogicalDevice m_Device;
+		VulkanInstance m_Instance;
+		VulkanDebugMessenger m_DebugMessenger;
+		VulkanPhysicalDevice m_PhysicalDevice;
+
 	};
 
 }

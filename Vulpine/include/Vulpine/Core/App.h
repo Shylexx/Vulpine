@@ -34,10 +34,13 @@ namespace Vulpine
             return m_Window.get();
         }
 
+				bool debugMode() { return m_DebugMode; }
+
     private:
         bool m_Running = true;
         bool m_Minimized = false;
         float m_LastFrameTime = 0;
+				bool m_DebugMode = true;
         std::unique_ptr<Window> m_Window;
 
     private:
