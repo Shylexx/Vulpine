@@ -5,6 +5,7 @@
 
 #include "Vulpine/Core/Window.h"
 #include "Vulpine/Scene/Scene.h"
+#include <Vulpine/Render/Vulkan/VkRenderer.h>
 
 int main(int argc, char **argv);
 
@@ -43,6 +44,8 @@ namespace Vulpine
         static App *s_Instance;
 
         Scene *m_CurrentScene;
+
+        std::unique_ptr<VulkanRenderer> m_Renderer;
 
         friend int ::main(int argc, char **argv);
         WindowProperties m_WindowProps;
