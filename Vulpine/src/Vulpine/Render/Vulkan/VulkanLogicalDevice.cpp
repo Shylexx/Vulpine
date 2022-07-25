@@ -17,7 +17,8 @@ namespace Vulpine
 {
 	void VulkanLogicalDevice::Create()
 	{
-		QueueFamilyIndices indices = VulkanPhysicalDevice::FindAvailableQueueFamilies(m_PhysicalDevice.physicalDevice());
+		// THIS CALL SEGFAULTS
+		QueueFamilyIndices indices = m_PhysicalDevice.GetQueueFamilies();
 
 		VkDeviceQueueCreateInfo queueCreateInfo{};
 		queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;

@@ -14,6 +14,7 @@ namespace Vulpine
 		VkPhysicalDevice physicalDevice() { return m_VkPhysicalDevice; }
 		static bool IsDeviceSuitable(VkPhysicalDevice device);
 		static QueueFamilyIndices FindAvailableQueueFamilies(VkPhysicalDevice device);
+		QueueFamilyIndices GetQueueFamilies();
 	private:
 		VkPhysicalDevice m_VkPhysicalDevice;
 
