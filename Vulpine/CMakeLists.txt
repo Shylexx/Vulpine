@@ -29,8 +29,12 @@ set(VULPINE_HEADERS
     include/Vulpine/ImGui/ImGuiApp.h
     include/Vulpine/ImGui/ImGuiLayer.h
     include/Vulpine/ImGui/ImGuiScene.h
-		include/Vulpine/Render/Vulkan/VkRenderer.h
-		include/Vulpine/Render/Vulkan/VkDevice.h
+	include/Vulpine/Render/Vulkan/VulkanRenderer.h
+	include/Vulpine/Render/Vulkan/VulkanLogicalDevice.h
+    include/Vulpine/Render/Vulkan/VulkanInstance.h
+    include/Vulpine/Render/Vulkan/VulkanPhysicalDevice.h
+    include/Vulpine/Render/Vulkan/VulkanDebugMessenger.h
+    include/Vulpine/Render/Vulkan/VulkanQueueFamilyIndices.h
 )
 
 set(VULPINE_SOURCES
@@ -42,8 +46,11 @@ set(VULPINE_SOURCES
     src/Vulpine/ImGui/ImGuiApp.cpp
     src/Vulpine/ImGui/ImGuiLayer.cpp
     src/Vulpine/ImGui/ImGuiScene.cpp
-		src/Vulpine/Render/Vulkan/VkRenderer.cpp
-		src/Vulpine/Render/Vulkan/VkDevice.cpp
+	src/Vulpine/Render/Vulkan/VulkanRenderer.cpp
+	src/Vulpine/Render/Vulkan/VulkanLogicalDevice.cpp
+    src/Vulpine/Render/Vulkan/VulkanInstance.cpp
+	src/Vulpine/Render/Vulkan/VulkanPhysicalDevice.cpp
+    src/Vulpine/Render/Vulkan/VulkanDebugMessenger.cpp
 )
 
 add_library(${PROJECT_NAME} STATIC

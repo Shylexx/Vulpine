@@ -12,16 +12,12 @@ namespace Vulpine
         s_Instance = this;
         m_Running = true;
         m_Window = std::make_unique<Window>(m_WindowProps);
+        m_Renderer = std::make_unique<VulkanRenderer>();
     }
 
     App::~App()
     {
         glfwTerminate();
-    }
-
-    void App::PrintHelloWorld()
-    {
-        std::cout << "Hello from GameApp" << std::endl;
     }
 
     void App::DebugLogProps()
@@ -30,10 +26,10 @@ namespace Vulpine
 
     void App::Run()
     {
-        // Game Loop
+        // Init
         float time = (float)glfwGetTime();
-        std::cout << "m_Running: " << m_Running << std::endl;
-        m_Renderer = std::make_unique<VulkanRenderer>();
+        m_Renderer->Init();
+
         // Game Loop
         while (m_Running)
         {
@@ -52,29 +48,8 @@ namespace Vulpine
             }
         }
 
-        /*if (!glfwInit())
-        {
-            std::cout << "GLFW Init Failed" << std::endl;
-        }
+        m_Renderer->Cleanup();
 
-
-        GLFWwindow* window = glfwCreateWindow(640, 480, "Vulpine Engine", NULL, NULL);
-
-        if (!window) {
-            std::cout << "Window Creation Failed" << std::endl;
-        }
-
-
-        std::cout << "Vulpine Engine Init" << std::endl;
-
-        while (!glfwWindowShouldClose(window))
-        {
-            glfwSwapBuffers(window);
-            glfwPollEvents();
-        }
-
-        glfwDestroyWindow(window);
-        glfwTerminate();*/
     }
 
     void App::Update(float deltaTime)

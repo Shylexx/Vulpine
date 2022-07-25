@@ -27,7 +27,6 @@ static void glfw_error_callback(int error, const char *description)
 int main(int argc, char **argv)
 {
     std::cout << "Hello Vulpine!" << std::endl;
-    Vulpine::App::PrintHelloWorld();
 
     // Init
     std::cout << "App Initialisation" << std::endl;

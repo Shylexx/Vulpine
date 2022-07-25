@@ -5,7 +5,7 @@
 
 #include "Vulpine/Core/Window.h"
 #include "Vulpine/Scene/Scene.h"
-#include <Vulpine/Render/Vulkan/VkRenderer.h>
+#include <Vulpine/Render/Vulkan/VulkanRenderer.h>
 
 int main(int argc, char **argv);
 
@@ -25,7 +25,6 @@ namespace Vulpine
 
         void CloseApp();
 
-        static void PrintHelloWorld();
         static void DebugLogProps();
 
         static App &GetInstance() { return *s_Instance; }
@@ -34,13 +33,13 @@ namespace Vulpine
             return m_Window.get();
         }
 
-				bool debugMode() { return m_DebugMode; }
+		bool debugMode() { return m_DebugMode; }
 
     private:
         bool m_Running = true;
         bool m_Minimized = false;
         float m_LastFrameTime = 0;
-				bool m_DebugMode = true;
+		bool m_DebugMode = true;
         std::unique_ptr<Window> m_Window;
 
     private:
