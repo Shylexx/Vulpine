@@ -16,7 +16,7 @@ namespace Vulpine
 		std::vector<VkPhysicalDevice> devices(deviceCount);
 		vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
 
-		for (const auto &device : devices)
+		for (auto device : devices)
 		{
 			if (IsDeviceSuitable(device))
 			{
@@ -29,23 +29,23 @@ namespace Vulpine
 		{
 			throw std::runtime_error("Failed to find a suitable GPU!");
 		}
+
+		std::cout << m_VkPhysicalDevice << std::endl;
     }
 
-    bool VulkanPhysicalDevice::IsDeviceSuitable(VkPhysicalDevice device)
+    bool VulkanPhysicalDevice::IsDeviceSuitable(VkPhysicalDevice &device)
     {
         QueueFamilyIndices indices = FindAvailableQueueFamilies(device);
 
 		return indices.isComplete();
     }
 
-    QueueFamilyIndices VulkanPhysicalDevice::FindAvailableQueueFamilies(VkPhysicalDevice device)
+    QueueFamilyIndices VulkanPhysicalDevice::FindAvailableQueueFamilies(VkPhysicalDevice &device)
     {
         QueueFamilyIndices indices;
 
 		uint32_t queueFamilyCount = 0;
 		vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
-
-		std::cout << "Queue Family Count: " << queueFamilyCount << std::endl;
 		std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
 		vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
 
@@ -68,33 +68,5 @@ namespace Vulpine
 		return indices;
     }
 
-	// Not currently working
-	QueueFamilyIndices VulkanPhysicalDevice::GetQueueFamilies()
-	{
-		QueueFamilyIndices indices;
-
-		uint32_t queueFamilyCount = 0;
-		vkGetPhysicalDeviceQueueFamilyProperties(m_VkPhysicalDevice, &queueFamilyCount, nullptr);
-
-		std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
-		vkGetPhysicalDeviceQueueFamilyProperties(m_VkPhysicalDevice, &queueFamilyCount, queueFamilies.data());
-
-		int i = 0;
-		for (const auto& queueFamily : queueFamilies)
-		{
-			if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
-			{
-				indices.graphicsFamily = i;
-			}
-
-			if (indices.isComplete())
-			{
-				break;
-			}
-
-			i++;
-		}
-
-		return indices;
-	}
+	
 }

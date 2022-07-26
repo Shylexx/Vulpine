@@ -6,21 +6,21 @@ namespace Vulpine
 {
 	void VulkanRenderer::Init()
 	{
-		m_Instance.Create();
-		m_DebugMessenger.Setup(m_Instance.instance());
-		m_PhysicalDevice.Pick(m_Instance.instance());
-		m_Device.Create();
+		m_Instance->Create();
+		//m_DebugMessenger->Setup(m_Instance.instance());
+		m_PhysicalDevice->Pick(m_Instance->instance());
+		m_Device->Create(m_PhysicalDevice->PhysicalDevice());
 	}
 
 	void VulkanRenderer::Cleanup()
 	{
-		m_Device.Cleanup();
+		m_Device->Cleanup();
 
-		if(App::GetInstance().debugMode())
+		/*if(App::GetInstance().debugMode())
 		{
 			m_DebugMessenger.Cleanup(m_Instance.instance());
-		}
+		}*/
 
-		m_Instance.Cleanup();
+		m_Instance->Cleanup();
 	}
 }

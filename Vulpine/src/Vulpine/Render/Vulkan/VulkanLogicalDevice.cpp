@@ -7,6 +7,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
+#include <optional>
 #include <vulkan/vulkan.h>
 
 
@@ -15,10 +16,10 @@
 // GET AVAILABLE EXTENSIONS CORRECTLY
 namespace Vulpine
 {
-	void VulkanLogicalDevice::Create()
+	void VulkanLogicalDevice::Create(VkPhysicalDevice physicalDevice)
 	{
 		// THIS CALL SEGFAULTS
-		QueueFamilyIndices indices = m_PhysicalDevice.GetQueueFamilies();
+		QueueFamilyIndices indices = VulkanPhysicalDevice::FindAvailableQueueFamilies(physicalDevice);
 
 		VkDeviceQueueCreateInfo queueCreateInfo{};
 		queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
@@ -40,7 +41,7 @@ namespace Vulpine
 		createInfo.enabledExtensionCount = 0;
 		createInfo.enabledLayerCount = 0;
 
-		if (vkCreateDevice(m_PhysicalDevice.physicalDevice(), &createInfo, nullptr, &m_VkDevice) != VK_SUCCESS)
+		if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &m_VkDevice) != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to Create Logical Device!");
 		}
@@ -48,9 +49,39 @@ namespace Vulpine
 		vkGetDeviceQueue(m_VkDevice, indices.graphicsFamily.value(), 0, &m_GraphicsQueue);
 	}
 
-		void VulkanLogicalDevice::Cleanup()
+	void VulkanLogicalDevice::Cleanup()
 	{
 		vkDestroyDevice(m_VkDevice, nullptr);
+	}
+
+	// Not currently working
+	QueueFamilyIndices VulkanLogicalDevice::CreateQueueIndices()
+	{
+		QueueFamilyIndices indices;/*
+
+		uint32_t queueFamilyCount = 0;
+		vkGetPhysicalDeviceQueueFamilyProperties(m_PhysicalDevice.PhysicalDevice(), &queueFamilyCount, nullptr);
+
+		std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+		vkGetPhysicalDeviceQueueFamilyProperties(m_PhysicalDevice.PhysicalDevice(), &queueFamilyCount, queueFamilies.data());
+
+		int i = 0;
+		for (const auto& queueFamily : queueFamilies)
+		{
+			if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+			{
+				indices.graphicsFamily = i;
+			}
+
+			if (indices.isComplete())
+			{
+				break;
+			}
+
+			i++;
+		}*/
+
+		return indices;
 	}
 
 }

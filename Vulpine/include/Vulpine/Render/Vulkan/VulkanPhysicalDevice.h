@@ -3,6 +3,7 @@
 
 #include <Vulpine/Render/Vulkan/VulkanQueueFamilyIndices.h>
 #include <vulkan/vulkan.h>
+#include <Vulpine/Render/Vulkan/VulkanInstance.h>
 
 namespace Vulpine
 {
@@ -11,12 +12,16 @@ namespace Vulpine
 	public:
 		void Pick(VkInstance instance);
 
-		VkPhysicalDevice physicalDevice() { return m_VkPhysicalDevice; }
-		static bool IsDeviceSuitable(VkPhysicalDevice device);
-		static QueueFamilyIndices FindAvailableQueueFamilies(VkPhysicalDevice device);
-		QueueFamilyIndices GetQueueFamilies();
+		static bool IsDeviceSuitable(VkPhysicalDevice &device);
+		static QueueFamilyIndices FindAvailableQueueFamilies(VkPhysicalDevice &device);
+
+		VkPhysicalDevice& PhysicalDevice() { return m_VkPhysicalDevice; }
 	private:
-		VkPhysicalDevice m_VkPhysicalDevice;
+
+		VkPhysicalDevice m_VkPhysicalDevice = VK_NULL_HANDLE;
+
+
+		//const VulkanInstance& m_Instance;
 
 		
 	};
