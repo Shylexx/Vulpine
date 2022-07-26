@@ -3,6 +3,8 @@
 #include <iostream>
 #include <imgui.h>
 
+#include <Vulpine/Render/Vulkan/VulkanRenderer.h>
+
 namespace Vulpine
 {
     App *App::s_Instance;

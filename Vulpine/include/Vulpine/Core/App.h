@@ -39,7 +39,7 @@ namespace Vulpine
         bool m_Running = true;
         bool m_Minimized = false;
         float m_LastFrameTime = 0;
-		bool m_DebugMode = true;
+        bool m_DebugMode = true;
         std::unique_ptr<Window> m_Window;
 
     private:

@@ -2,6 +2,7 @@
 #define __VK_QUEUE_FAM_IND_H__
 
 #include <optional>
+#include <stdint.h>
 
 namespace Vulpine
 {
