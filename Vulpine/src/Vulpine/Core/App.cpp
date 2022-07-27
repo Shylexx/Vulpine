@@ -14,7 +14,7 @@ namespace Vulpine
         s_Instance = this;
         m_Running = true;
         m_Window = std::make_unique<Window>(m_WindowProps);
-        m_Renderer = std::make_unique<VulkanRenderer>();
+        m_Renderer = std::make_unique<VulkanRenderer>(m_Window.get());
     }
 
     App::~App()

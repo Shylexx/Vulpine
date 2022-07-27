@@ -28,7 +28,7 @@ namespace Vulpine
 		unsigned int GetWidth() const { return m_Props.Width; }
 		unsigned int GetHeight() const { return m_Props.Height; }
 
-		virtual void *GetWindow() const { return m_Window; }
+		virtual GLFWwindow* GetWindow() const { return m_Window; }
 
 	private:
 		void Init(const WindowProperties &props);

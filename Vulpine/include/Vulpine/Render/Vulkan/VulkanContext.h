@@ -2,8 +2,8 @@
 #define __VK_CONTEXT_H__
 
 #include <Vulpine/Render/Vulkan/VulkanQueueFamilyIndices.h>
+#include <Vulpine/Core/Window.h>
 #include <vulkan/vulkan.h>
-
 #include <vector>
 
 namespace Vulpine
@@ -11,7 +11,7 @@ namespace Vulpine
   class VulkanContext
   {
   public:
-      VulkanContext() = default;
+      VulkanContext(Window* window);
       ~VulkanContext() = default;
 
     void CreateContext();
@@ -23,8 +23,10 @@ namespace Vulpine
     VkPhysicalDevice m_PhysicalDevice = VK_NULL_HANDLE;
     VkInstance m_Instance = VK_NULL_HANDLE;
     VkDebugUtilsMessengerEXT m_DebugMessenger = VK_NULL_HANDLE;
+    VkSurfaceKHR m_Surface = VK_NULL_HANDLE;
 
     VkQueue m_GraphicsQueue;
+    VkQueue m_PresentQueue;
 
     QueueFamilyIndices FindAvailableQueueFamilies(VkPhysicalDevice physicalDevice);
     bool IsPhysicalDeviceSuitable(VkPhysicalDevice physicalDevice);
@@ -33,6 +35,7 @@ namespace Vulpine
     void SetupDebugMessenger();
     void PickPhysicalDevice();
     void CreateLogicalDevice();
+    void CreateSurface();
 
     bool m_EnableValidationLayers = true;
 
@@ -43,7 +46,7 @@ namespace Vulpine
     bool CheckValidationLayerSupport();
     std::vector<const char *> GetRequiredExtensions();
 
-    
+    Window* m_Window;
 
   };
 }

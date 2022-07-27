@@ -5,9 +5,9 @@
 namespace Vulpine
 {
 
-	VulkanRenderer::VulkanRenderer()
+	VulkanRenderer::VulkanRenderer(Window *window)
 	{
-		m_Context = std::make_unique<VulkanContext>();
+		m_Context = std::make_unique<VulkanContext>(window);
 	}
 
 	void VulkanRenderer::Init()
