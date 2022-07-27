@@ -9,6 +9,9 @@ namespace Vulpine
 class VulkanRenderer
 {
 public:
+	VulkanRenderer();
+	~VulkanRenderer() = default;
+
 	void Init();
 	void Cleanup();
 

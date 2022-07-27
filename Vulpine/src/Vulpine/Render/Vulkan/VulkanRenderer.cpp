@@ -4,6 +4,12 @@
 
 namespace Vulpine
 {
+
+	VulkanRenderer::VulkanRenderer()
+	{
+		m_Context = std::make_unique<VulkanContext>();
+	}
+
 	void VulkanRenderer::Init()
 	{
 		m_Context->CreateContext();

@@ -1,16 +1,35 @@
 #include "Vulpine/Render/Vulkan/VulkanQueueFamilyIndices.h"
 #include <Vulpine/Render/Vulkan/VulkanContext.h>
-#include <Vulpine/Core/App.h>
+#include <stdexcept>
+#include <GLFW/glfw3.h>
 #include <cstring>
 #include <vulkan/vulkan.h>
+#include <iostream>
 
 namespace Vulpine
 {
+    static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
+        VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+        VkDebugUtilsMessageTypeFlagsEXT messageType,
+        const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+        void* pUserData
+    )
+    {
+        //std::cerr << "Validation Layer: " << pCallbackData->pMessage << std::endl;
+        std::cerr << "Validation Layer Message" << std::endl;
+        return VK_FALSE;
+    }
+
+
   void VulkanContext::CreateContext()
   {
+    std::cout << "Create Instance" << std::endl;
     CreateInstance();
+    std::cout << "Setup Debug Messenger" << std::endl;
     SetupDebugMessenger();
+    std::cout << "Pick Physical Device" << std::endl;
     PickPhysicalDevice();
+    std::cout << "Create Logical Device" << std::endl;
     CreateLogicalDevice();
   }
 
@@ -23,15 +42,17 @@ namespace Vulpine
       DestroyDebugUtilsMessengerEXT(m_Instance, m_DebugMessenger, nullptr);
     }
     vkDestroyInstance(m_Instance, nullptr);
+
+    std::cout << "Vulkan Context Cleaned Up" << std::endl;
   }
 
   void VulkanContext::CreateInstance()
   {
-    if(App::GetInstance().debugMode() && !CheckValidationLayerSupport())
-		{
+    if(!CheckValidationLayerSupport())
+	{
 			std::cout << "Validation Layers Available: " << CheckValidationLayerSupport() << std::endl;
 			throw std::runtime_error("Cannot use Debug: Validation Layers not Available!");
-		}
+	}
 
 		VkApplicationInfo appInfo{};
 		appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -41,7 +62,7 @@ namespace Vulpine
 		appInfo.engineVersion = VK_MAKE_VERSION(0, 0, 1);
 		appInfo.apiVersion = VK_API_VERSION_1_3;
 
-		VkInstanceCreateInfo createInfo{};
+		VkInstanceCreateInfo createInfo= {};
 		createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 		createInfo.pApplicationInfo = &appInfo;
 
@@ -49,22 +70,25 @@ namespace Vulpine
 		createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 		createInfo.ppEnabledExtensionNames = extensions.data();
 
-		VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
-
-		if(App::GetInstance().debugMode())
+		if(true)
 		{
-		createInfo.enabledLayerCount = static_cast<uint32_t>(m_ValidationLayers.size());
-		createInfo.ppEnabledLayerNames = m_ValidationLayers.data();
-		PopulateDebugMessengerCreateInfoStruct(debugCreateInfo);
-		createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
+            VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
+		    createInfo.enabledLayerCount = static_cast<uint32_t>(m_ValidationLayers.size());
+		    createInfo.ppEnabledLayerNames = m_ValidationLayers.data();
+
+		    PopulateDebugMessengerCreateInfoStruct(debugCreateInfo);
+		    createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
 		} else {
-		createInfo.enabledLayerCount = 0;
-		createInfo.pNext = nullptr;
+		    createInfo.enabledLayerCount = 0;
+		    createInfo.pNext = nullptr;
 		}
+         
+        
 		if (vkCreateInstance(&createInfo, nullptr, &m_Instance) != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create Vulkan Instance");
-		}
+        }
+ 
   }
 
   void VulkanContext::SetupDebugMessenger()
@@ -91,6 +115,7 @@ namespace Vulpine
 
 		for (auto device : devices)
 		{
+            
 			if (IsPhysicalDeviceSuitable(device))
 			{
 				m_PhysicalDevice = device;
@@ -100,6 +125,7 @@ namespace Vulpine
 
 		if (m_PhysicalDevice == VK_NULL_HANDLE)
 		{
+            std::cout << "Failed to find GPU" << std::endl;
 			throw std::runtime_error("Failed to find a suitable GPU!");
 		}
 
@@ -164,7 +190,7 @@ namespace Vulpine
       }
     }
     return true;
-  }
+   }
 
   std::vector<const char*> VulkanContext::GetRequiredExtensions()
   {
@@ -175,7 +201,7 @@ namespace Vulpine
 
     std::vector<const char*> extensions(glfwExtensions, glfwExtensions+glfwExtensionCount);
 
-    if(App::GetInstance().debugMode())
+    if(true)
     {
       extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     }
@@ -185,7 +211,10 @@ namespace Vulpine
   bool VulkanContext::IsPhysicalDeviceSuitable(VkPhysicalDevice physicalDevice)
   {
     QueueFamilyIndices indices = FindAvailableQueueFamilies(physicalDevice);
-
+    if (indices.isComplete())
+    {
+        std::cout << "Suitable Physical Device Found" << std::endl;
+    }
     return indices.isComplete();
   }
 
@@ -247,24 +276,14 @@ namespace Vulpine
     }
   }
 
-  static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
-      VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-      VkDebugUtilsMessageTypeFlagsEXT messageType,
-      const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
-      void *pUserData
-      )
-  {
-    std::cerr << "Validation Layer: " << pCallbackData->pMessage << std::endl;
-    return VK_FALSE;
-  }
 
   void VulkanContext::PopulateDebugMessengerCreateInfoStruct(VkDebugUtilsMessengerCreateInfoEXT &createInfo)
   {
-    createInfo = {};
-    createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-    createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-    createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-    createInfo.pfnUserCallback = debugCallback;
+      createInfo = {};
+      createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+      createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+      createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+      createInfo.pfnUserCallback = debugCallback;
   }
 
 

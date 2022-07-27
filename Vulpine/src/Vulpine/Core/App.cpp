@@ -30,7 +30,9 @@ namespace Vulpine
     {
         // Init
         float time = (float)glfwGetTime();
+        std::cout << "Renderer Init" << std::endl;
         m_Renderer->Init();
+        std::cout << "Renderer Init Success" << std::endl;
 
         // Game Loop
         while (m_Running)
