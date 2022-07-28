@@ -22,7 +22,10 @@ namespace Vulpine
     VkFormat m_SwapChainImageFormat;
     VkExtent2D m_SwapChainExtent;
 
+    std::vector<VkImageView> m_SwapChainImageViews;
+
     void CreateSwapChain();
+    void CreateImageViews();
     
     VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
     VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
