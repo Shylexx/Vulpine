@@ -3,6 +3,7 @@
 #include <Vulpine/Render/Vulkan/VulkanPipeline.h>
 #include <fstream>
 #include <stdexcept>
+#include <vulkan/vulkan_core.h>
 
 namespace Vulpine
 {
@@ -17,6 +18,7 @@ namespace Vulpine
 
   void VulkanPipeline::Cleanup()
   {
+    vkDestroyPipeline(m_Context.logicalDevice(), m_Pipeline, nullptr);
     vkDestroyPipelineLayout(m_Context.logicalDevice(), m_Layout, nullptr);
   }
 
@@ -123,6 +125,30 @@ namespace Vulpine
 
     if(vkCreatePipelineLayout(m_Context.logicalDevice(), &layoutInfo, nullptr, &m_Layout) != VK_SUCCESS) {
       throw std::runtime_error("Failed to Create Pipeline Layout!");
+    }
+
+    VkGraphicsPipelineCreateInfo pipelineInfo{};
+    pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+    pipelineInfo.stageCount = 2;
+    pipelineInfo.pStages = shaderStages;
+    pipelineInfo.pVertexInputState = &vertexInputInfo;
+    pipelineInfo.pInputAssemblyState = &inputAssembly;
+    pipelineInfo.pViewportState = &viewportState;
+    pipelineInfo.pRasterizationState = &rasterizer;
+    pipelineInfo.pMultisampleState = &multisampling;
+    pipelineInfo.pDepthStencilState = nullptr;
+    pipelineInfo.pColorBlendState = &colorBlending;
+    pipelineInfo.pDynamicState = &dynamicState;
+
+    pipelineInfo.layout = m_Layout;
+    pipelineInfo.renderPass = m_SwapChain.renderPass();
+    pipelineInfo.subpass = 0;
+
+    pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+    pipelineInfo.basePipelineIndex = -1;
+
+    if(vkCreateGraphicsPipelines(m_Context.logicalDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_Pipeline) != VK_SUCCESS) {
+      throw std::runtime_error("Failed to Create Graphics Pipeline");
     }
 
     vkDestroyShaderModule(m_Context.logicalDevice(), vertShaderModule, nullptr);

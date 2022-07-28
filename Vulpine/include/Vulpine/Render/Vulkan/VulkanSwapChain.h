@@ -18,6 +18,7 @@ namespace Vulpine
     VkSwapchainKHR swapChain() { return m_SwapChain; }
     VkExtent2D extent() { return m_SwapChainExtent; }
     VkFormat format() { return m_SwapChainImageFormat; }
+    VkRenderPass renderPass() { return m_RenderPass; }
     std::vector<VkImage> images() { return m_SwapChainImages; }
     std::vector<VkImageView> imageViews() { return m_SwapChainImageViews; }
   private:
