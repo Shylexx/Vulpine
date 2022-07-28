@@ -1,13 +1,27 @@
 #ifndef __VK_CONTEXT_H__
 #define __VK_CONTEXT_H__
 
-#include <Vulpine/Render/Vulkan/VulkanQueueFamilyIndices.h>
 #include <Vulpine/Core/Window.h>
 #include <vulkan/vulkan.h>
 #include <vector>
+#include <optional>
 
 namespace Vulpine
 {
+
+  struct SwapChainSupportDetails {
+    VkSurfaceCapabilitiesKHR capabilities;
+    std::vector<VkSurfaceFormatKHR> formats;
+    std::vector<VkPresentModeKHR> presentModes;
+  };
+
+  struct QueueFamilyIndices
+  {
+    std::optional<uint32_t> graphicsFamily;
+    std::optional<uint32_t> presentFamily;
+    bool isComplete() { return graphicsFamily.has_value() && presentFamily.has_value(); }
+  };
+
   class VulkanContext
   {
   public:
@@ -16,8 +30,18 @@ namespace Vulpine
 
     void CreateContext();
     void Cleanup();
+
+    Window* GetWindow() { return m_Window; }
+
+    VkDevice logicalDevice() { return m_LogicalDevice; }
+    VkSurfaceKHR surface() { return m_Surface; }
+    VkQueue graphicsQueue() { return m_GraphicsQueue; }
+    VkQueue presentQueue() { return m_PresentQueue; }
+
+    SwapChainSupportDetails PhysicalDeviceSwapChainSupport();
+    QueueFamilyIndices PhysicalDeviceQueueFamilies();
   private:
-    const std::vector<const char*> m_ValidationLayers = { "VK_LAYER_KHRONOS_validation" };
+
 
     VkDevice m_LogicalDevice = VK_NULL_HANDLE;
     VkPhysicalDevice m_PhysicalDevice = VK_NULL_HANDLE;
@@ -44,9 +68,15 @@ namespace Vulpine
     void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks *pAllocator);
 
     bool CheckValidationLayerSupport();
+    bool CheckDeviceExtensionSupport(VkPhysicalDevice physicalDevice);
     std::vector<const char *> GetRequiredExtensions();
 
+    SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice physicalDevice);
+
     Window* m_Window;
+
+    const std::vector<const char*> m_ValidationLayers = { "VK_LAYER_KHRONOS_validation" };
+    const std::vector<const char*> m_DeviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
   };
 }

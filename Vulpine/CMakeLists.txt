@@ -30,8 +30,8 @@ set(VULPINE_HEADERS
     include/Vulpine/ImGui/ImGuiLayer.h
     include/Vulpine/ImGui/ImGuiScene.h
     include/Vulpine/Render/Vulkan/VulkanRenderer.h
-    include/Vulpine/Render/Vulkan/VulkanQueueFamilyIndices.h
     include/Vulpine/Render/Vulkan/VulkanContext.h
+    include/Vulpine/Render/Vulkan/VulkanSwapChain.h
 )
 
 set(VULPINE_SOURCES
@@ -45,6 +45,7 @@ set(VULPINE_SOURCES
     src/Vulpine/ImGui/ImGuiScene.cpp
     src/Vulpine/Render/Vulkan/VulkanRenderer.cpp
     src/Vulpine/Render/Vulkan/VulkanContext.cpp
+    src/Vulpine/Render/Vulkan/VulkanSwapChain.cpp
 )
 
 add_library(${PROJECT_NAME} STATIC

@@ -1,13 +1,14 @@
 #include <vulkan/vulkan.h>
 #include <GLFW/glfw3.h>
 
-#include <Vulpine/Render/Vulkan/VulkanQueueFamilyIndices.h>
 #include <Vulpine/Render/Vulkan/VulkanContext.h>
 #include <Vulpine/Core/App.h>
 
 #include <stdexcept>
 #include <cstring>
 #include <iostream>
+#include <string>
+#include <set>
 
 namespace Vulpine
 {
@@ -145,8 +146,8 @@ namespace Vulpine
 
   void VulkanContext::CreateLogicalDevice()
   {
-    // THIS CALL SEGFAULTS
 		QueueFamilyIndices indices = FindAvailableQueueFamilies(m_PhysicalDevice);
+    
 
         std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
         std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value() };
@@ -171,7 +172,8 @@ namespace Vulpine
 
         createInfo.pEnabledFeatures = &deviceFeatures;
 
-        createInfo.enabledExtensionCount = 0;
+        createInfo.enabledExtensionCount = static_cast<uint32_t>(m_DeviceExtensions.size());
+        createInfo.ppEnabledExtensionNames = m_DeviceExtensions.data();
 
         if (App::GetInstance().debugMode()) {
             createInfo.enabledLayerCount = static_cast<uint32_t>(m_ValidationLayers.size());
@@ -187,6 +189,7 @@ namespace Vulpine
 
         vkGetDeviceQueue(m_LogicalDevice, indices.graphicsFamily.value(), 0, &m_GraphicsQueue);
         vkGetDeviceQueue(m_LogicalDevice, indices.presentFamily.value(), 0, &m_PresentQueue);
+
   }
 
   void VulkanContext::CreateSurface()
@@ -247,7 +250,34 @@ namespace Vulpine
     {
         std::cout << "Suitable Physical Device Found" << std::endl;
     }
-    return indices.isComplete();
+
+    bool extensionsSupported = CheckDeviceExtensionSupport(physicalDevice);
+
+    bool swapChainAdequate = false;
+    if(extensionsSupported) {
+      SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(physicalDevice);
+      swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
+    }
+
+    return indices.isComplete() && extensionsSupported && swapChainAdequate;
+  }
+
+  bool VulkanContext::CheckDeviceExtensionSupport(VkPhysicalDevice physicalDevice)
+  {
+    uint32_t extensionCount;
+    vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &extensionCount, nullptr);
+
+    std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+    vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &extensionCount, availableExtensions.data());
+
+    std::set<std::string> requiredExtensions(m_DeviceExtensions.begin(), m_DeviceExtensions.end());
+
+    for(const auto& extension : availableExtensions)
+    {
+      requiredExtensions.erase(extension.extensionName);
+    }
+
+    return requiredExtensions.empty();
   }
 
   QueueFamilyIndices VulkanContext::FindAvailableQueueFamilies(VkPhysicalDevice physicalDevice)
@@ -323,5 +353,37 @@ namespace Vulpine
       createInfo.pfnUserCallback = debugCallback;
   }
 
+  SwapChainSupportDetails VulkanContext::QuerySwapChainSupport(VkPhysicalDevice physicalDevice)
+  {
+    SwapChainSupportDetails details;
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, m_Surface, &details.capabilities);
+
+    uint32_t formatCount;
+    vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, m_Surface, &formatCount, nullptr);
+    if(formatCount != 0)
+    {
+      details.formats.resize(formatCount);
+      vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, m_Surface, &formatCount, details.formats.data());
+    }
+
+    uint32_t presentModeCount;
+    vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, m_Surface, &presentModeCount, nullptr);
+    if(presentModeCount != 0)
+    {
+      details.presentModes.resize(presentModeCount);
+      vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, m_Surface, &presentModeCount, details.presentModes.data());
+    }
+    return details;
+  }
+
+  SwapChainSupportDetails VulkanContext::PhysicalDeviceSwapChainSupport()
+  {
+    return QuerySwapChainSupport(m_PhysicalDevice);
+  }
+
+  QueueFamilyIndices VulkanContext::PhysicalDeviceQueueFamilies()
+  {
+    return FindAvailableQueueFamilies(m_PhysicalDevice);
+  }
 
 }
