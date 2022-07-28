@@ -32,6 +32,7 @@ set(VULPINE_HEADERS
     include/Vulpine/Render/Vulkan/VulkanRenderer.h
     include/Vulpine/Render/Vulkan/VulkanContext.h
     include/Vulpine/Render/Vulkan/VulkanSwapChain.h
+    include/Vulpine/Render/Vulkan/VulkanPipeline.h
 )
 
 set(VULPINE_SOURCES
@@ -46,6 +47,7 @@ set(VULPINE_SOURCES
     src/Vulpine/Render/Vulkan/VulkanRenderer.cpp
     src/Vulpine/Render/Vulkan/VulkanContext.cpp
     src/Vulpine/Render/Vulkan/VulkanSwapChain.cpp
+    src/Vulpine/Render/Vulkan/VulkanPipeline.cpp
 )
 
 add_library(${PROJECT_NAME} STATIC
