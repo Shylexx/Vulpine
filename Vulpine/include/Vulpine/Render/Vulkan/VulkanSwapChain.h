@@ -14,23 +14,29 @@ namespace Vulpine
     ~VulkanSwapChain() = default;
     void Init();
     void Cleanup();
+
+    VkSwapchainKHR swapChain() { return m_SwapChain; }
+    VkExtent2D extent() { return m_SwapChainExtent; }
+    VkFormat format() { return m_SwapChainImageFormat; }
+    std::vector<VkImage> images() { return m_SwapChainImages; }
+    std::vector<VkImageView> imageViews() { return m_SwapChainImageViews; }
   private:
     VkSwapchainKHR m_SwapChain;
-    VulkanContext& m_Context;
-
+    VkRenderPass m_RenderPass;
     std::vector<VkImage> m_SwapChainImages;
     VkFormat m_SwapChainImageFormat;
     VkExtent2D m_SwapChainExtent;
-
     std::vector<VkImageView> m_SwapChainImageViews;
 
     void CreateSwapChain();
     void CreateImageViews();
+    void CreateRenderPass();
     
     VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
     VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
     VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 
+    VulkanContext& m_Context;
   };
 }
 

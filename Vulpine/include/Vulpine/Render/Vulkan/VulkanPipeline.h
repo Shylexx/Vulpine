@@ -2,6 +2,7 @@
 #define __VK_PIPELINE_H__
 
 #include "Vulpine/Render/Vulkan/VulkanContext.h"
+#include "Vulpine/Render/Vulkan/VulkanSwapChain.h"
 #include <vector>
 #include <string>
 #include <vulkan/vulkan.h>
@@ -11,7 +12,7 @@ namespace Vulpine
   class VulkanPipeline
   {
   public:
-    VulkanPipeline(VulkanContext& context);
+    VulkanPipeline(VulkanContext& context, VulkanSwapChain& swapChain);
     ~VulkanPipeline() = default;
 
     void Init();
@@ -19,8 +20,10 @@ namespace Vulpine
   private:
 
     VulkanContext& m_Context;
+    VulkanSwapChain& m_SwapChain;
 
     VkPipeline m_Pipeline;
+    VkPipelineLayout m_Layout;
 
     void CreatePipeline();
 
