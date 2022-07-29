@@ -155,6 +155,11 @@ namespace Vulpine
     vkDestroyShaderModule(m_Context.logicalDevice(), fragShaderModule, nullptr);
   }
 
+  void VulkanPipeline::Bind(VkCommandBuffer commandBuffer)
+  {
+    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_Pipeline);
+  }
+
   std::vector<char> VulkanPipeline::ReadFile(const std::string& filepath)
   {
     std::ifstream file(filepath, std::ios::ate | std::ios::binary);

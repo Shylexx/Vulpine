@@ -5,6 +5,7 @@
 #include <vulkan/vulkan.h>
 #include <vector>
 #include <optional>
+#include <vulkan/vulkan_core.h>
 
 namespace Vulpine
 {
@@ -37,6 +38,7 @@ namespace Vulpine
     VkSurfaceKHR surface() { return m_Surface; }
     VkQueue graphicsQueue() { return m_GraphicsQueue; }
     VkQueue presentQueue() { return m_PresentQueue; }
+    VkCommandPool commandPool() { return m_CommandPool; }
 
     SwapChainSupportDetails PhysicalDeviceSwapChainSupport();
     QueueFamilyIndices PhysicalDeviceQueueFamilies();
@@ -48,6 +50,7 @@ namespace Vulpine
     VkInstance m_Instance = VK_NULL_HANDLE;
     VkDebugUtilsMessengerEXT m_DebugMessenger = VK_NULL_HANDLE;
     VkSurfaceKHR m_Surface = VK_NULL_HANDLE;
+    VkCommandPool m_CommandPool = VK_NULL_HANDLE;
 
     VkQueue m_GraphicsQueue;
     VkQueue m_PresentQueue;
@@ -60,6 +63,7 @@ namespace Vulpine
     void PickPhysicalDevice();
     void CreateLogicalDevice();
     void CreateSurface();
+    void CreateCommandPool();
 
     bool m_EnableValidationLayers = true;
 

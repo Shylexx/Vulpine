@@ -41,10 +41,14 @@ namespace Vulpine
     PickPhysicalDevice();
     std::cout << "Create Logical Device" << std::endl;
     CreateLogicalDevice();
+    std::cout << "Create Command Pool" << std::endl;
+    CreateCommandPool();
   }
 
   void VulkanContext::Cleanup()
   {
+    vkDestroyCommandPool(m_LogicalDevice, m_CommandPool, nullptr);
+
     vkDestroyDevice(m_LogicalDevice, nullptr);
 
     if(m_EnableValidationLayers)
@@ -190,6 +194,19 @@ namespace Vulpine
         vkGetDeviceQueue(m_LogicalDevice, indices.graphicsFamily.value(), 0, &m_GraphicsQueue);
         vkGetDeviceQueue(m_LogicalDevice, indices.presentFamily.value(), 0, &m_PresentQueue);
 
+  }
+
+  void VulkanContext::CreateCommandPool() {
+    QueueFamilyIndices indices = FindAvailableQueueFamilies(m_PhysicalDevice);
+
+    VkCommandPoolCreateInfo poolInfo{};
+    poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+    poolInfo.queueFamilyIndex = indices.graphicsFamily.value();
+
+    if(vkCreateCommandPool(m_LogicalDevice, &poolInfo, nullptr, &m_CommandPool) != VK_SUCCESS) {
+      throw std::runtime_error("Failed to Create Command Pool!");
+    }
   }
 
   void VulkanContext::CreateSurface()

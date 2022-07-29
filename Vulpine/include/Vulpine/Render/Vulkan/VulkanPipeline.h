@@ -17,6 +17,8 @@ namespace Vulpine
 
     void Init();
     void Cleanup();
+
+    void Bind(VkCommandBuffer commandBuffer);
   private:
 
     VulkanContext& m_Context;

@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <limits>
 #include <stdexcept>
+#include <vulkan/vulkan_core.h>
 
 namespace Vulpine
 {
@@ -17,6 +18,7 @@ namespace Vulpine
     CreateSwapChain();
     CreateImageViews();
     CreateRenderPass();
+    CreateFrameBuffers();
   }
 
   void VulkanSwapChain::CreateSwapChain()
@@ -98,12 +100,23 @@ namespace Vulpine
     subpass.colorAttachmentCount = 1;
     subpass.pColorAttachments = &colorAttachmentRef;
 
+    VkSubpassDependency dependency{};
+    dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+    dependency.dstSubpass = 0;
+    dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dependency.srcAccessMask = 0;
+    dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
     VkRenderPassCreateInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
     renderPassInfo.attachmentCount = 1;
     renderPassInfo.pAttachments = &colorAttachment;
     renderPassInfo.subpassCount = 1;
     renderPassInfo.pSubpasses = &subpass;
+
+    renderPassInfo.dependencyCount = 1;
+    renderPassInfo.pDependencies = &dependency;
 
     if(vkCreateRenderPass(m_Context.logicalDevice(), &renderPassInfo, nullptr, &m_RenderPass) != VK_SUCCESS) {
       throw std::runtime_error("Could not create Render Pass!");
@@ -112,6 +125,13 @@ namespace Vulpine
 
   void VulkanSwapChain::Cleanup()
   {
+    vkDestroySemaphore(m_Context.logicalDevice(), m_ImageAvailableSemaphore, nullptr);
+    vkDestroySemaphore(m_Context.logicalDevice(), m_RenderFinishedSemaphore, nullptr);
+    vkDestroyFence(m_Context.logicalDevice(), m_InFlightFence, nullptr);
+    for(auto framebuffer : m_SwapChainFrameBuffers) {
+      vkDestroyFramebuffer(m_Context.logicalDevice(), framebuffer, nullptr);
+    }
+
     for(auto imageView : m_SwapChainImageViews) {
       vkDestroyImageView(m_Context.logicalDevice(), imageView, nullptr);
     }
@@ -182,9 +202,89 @@ namespace Vulpine
       createInfo.subresourceRange.baseArrayLayer = 0;
       createInfo.subresourceRange.layerCount = 1;
 
-      if(vkCreateImageView(m_Context.logicalDevice(), &createInfo, nullptr, &m_SwapChainImageViews[i]) != VK_SUCCESS) {
-        throw std::runtime_error("Failed to Create Image Views!");
+      if(vkCreateImageView(m_Context.logicalDevice(), &createInfo, nullptr, &m_SwapChainImageViews[i]) != VK_SUCCESS) { throw std::runtime_error("Failed to Create Image Views!");
       }
     }
   }
+
+  void VulkanSwapChain::CreateFrameBuffers()
+  {
+    m_SwapChainFrameBuffers.resize(m_SwapChainImageViews.size());
+    for(size_t i = 0; i < m_SwapChainImageViews.size(); i++) {
+      VkImageView attachments[] = { m_SwapChainImageViews[i] };
+
+      VkFramebufferCreateInfo framebufferInfo{};
+      framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+      framebufferInfo.renderPass = m_RenderPass;
+      framebufferInfo.attachmentCount = 1;
+      framebufferInfo.pAttachments = attachments;
+      framebufferInfo.width = m_SwapChainExtent.width;
+      framebufferInfo.height = m_SwapChainExtent.height;
+      framebufferInfo.layers = 1;
+
+      if(vkCreateFramebuffer(m_Context.logicalDevice(), &framebufferInfo, nullptr, &m_SwapChainFrameBuffers[i]) != VK_SUCCESS) {
+        throw std::runtime_error("Failed to Create Framebuffers!");
+      }
+    }
+  }
+
+  void VulkanSwapChain::CreateSyncObjects()
+  {
+    VkSemaphoreCreateInfo semaphoreInfo{};
+    semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+    VkFenceCreateInfo fenceInfo{};
+    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+    if(vkCreateSemaphore(m_Context.logicalDevice(), &semaphoreInfo, nullptr, &m_ImageAvailableSemaphore) != VK_SUCCESS
+        || vkCreateSemaphore(m_Context.logicalDevice(), &semaphoreInfo, nullptr, &m_RenderFinishedSemaphore) != VK_SUCCESS
+        || vkCreateFence(m_Context.logicalDevice(), &fenceInfo, nullptr, &m_InFlightFence) != VK_SUCCESS) {
+      throw std::runtime_error("Failed to Create Semaphores!");
+    }
+  }
+
+  void VulkanSwapChain::AcquireNextImage(uint32_t *imageIndex)
+  {
+    vkWaitForFences(m_Context.logicalDevice(), 1,&m_InFlightFence, VK_TRUE, UINT64_MAX);
+    vkResetFences(m_Context.logicalDevice(), 1, &m_InFlightFence);
+
+    vkAcquireNextImageKHR(m_Context.logicalDevice(), m_SwapChain, UINT64_MAX, m_ImageAvailableSemaphore, VK_NULL_HANDLE, imageIndex);
+  }
+
+  VkResult VulkanSwapChain::SubmitCommandBuffers(const VkCommandBuffer *buffers, uint32_t *imageIndex)
+  {
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+    VkSemaphore waitSemaphores[] = {m_ImageAvailableSemaphore};
+    VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+    submitInfo.waitSemaphoreCount = 1;
+    submitInfo.pWaitSemaphores = waitSemaphores;
+    submitInfo.pWaitDstStageMask = waitStages;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = buffers;
+
+    VkSemaphore signalSemaphores[] = {m_RenderFinishedSemaphore};
+    submitInfo.signalSemaphoreCount = 1;
+    submitInfo.pSignalSemaphores = signalSemaphores;
+
+    if(vkQueueSubmit(m_Context.graphicsQueue(), 1, &submitInfo, m_InFlightFence) != VK_SUCCESS) {
+      throw std::runtime_error("Failed to Submit Command Queue");
+    }
+
+    VkPresentInfoKHR presentInfo{};
+    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+    presentInfo.waitSemaphoreCount = 1;
+    presentInfo.pWaitSemaphores = signalSemaphores;
+
+    VkSwapchainKHR swapChains[] = {m_SwapChain};
+    presentInfo.swapchainCount = 1;
+    presentInfo.pSwapchains = swapChains;
+    presentInfo.pImageIndices = imageIndex;
+    presentInfo.pResults = nullptr;
+
+    return vkQueuePresentKHR(m_Context.presentQueue(), &presentInfo);
+  }
+
 }
