@@ -43,8 +43,10 @@ namespace Vulpine
             m_LastFrameTime = time;
             Update(deltaTime);
 
-            glfwSwapBuffers(static_cast<GLFWwindow *>(m_Window->GetWindow()));
+            //glfwSwapBuffers(static_cast<GLFWwindow *>(m_Window->GetWindow()));
             glfwPollEvents();
+
+            m_Renderer->DrawFrame();
 
             if (glfwWindowShouldClose(static_cast<GLFWwindow *>(m_Window->GetWindow())))
             {
