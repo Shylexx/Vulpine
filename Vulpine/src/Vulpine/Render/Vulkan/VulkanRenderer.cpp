@@ -16,9 +16,10 @@ namespace Vulpine
 
 	void VulkanRenderer::Init()
 	{
-		m_Context->CreateContext();
+	m_Context->CreateContext();
     m_SwapChain->Init();
     m_Pipeline->Init();
+    CreateCommandBuffers();
 	}
 
 	void VulkanRenderer::Cleanup()
@@ -26,61 +27,61 @@ namespace Vulpine
     vkDeviceWaitIdle(m_Context->logicalDevice());
 
     m_SwapChain->Cleanup();
-		m_Context->Cleanup();
     m_Pipeline->Cleanup();
+	m_Context->Cleanup();
+    
 	}
 
-  void VulkanRenderer::CreateCommandBuffer()
+  void VulkanRenderer::CreateCommandBuffers()
   {
+    m_CommandBuffers.resize(m_SwapChain->MaxFrames());
+
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocInfo.commandPool = m_Context->commandPool();
     allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandBufferCount = 1;
+    allocInfo.commandBufferCount = (uint32_t)m_CommandBuffers.size();
 
-    if(vkAllocateCommandBuffers(m_Context->logicalDevice(), &allocInfo, &m_CommandBuffer) != VK_SUCCESS) {
+    if(vkAllocateCommandBuffers(m_Context->logicalDevice(), &allocInfo, m_CommandBuffers.data()) != VK_SUCCESS) {
       throw std::runtime_error("Failed to Allocate Command Buffers!");
     }
   }
 
   void VulkanRenderer::DrawFrame()
   {
-    m_SwapChain->AcquireNextImage(&m_ImageIndex);
+    m_SwapChain->AcquireNextImage(&m_CurrentImage);
 
-    BeginFrame();
+    
+    BeginFrame(m_CommandBuffers[m_SwapChain->CurrentFrame()]);
 
-    BeginRenderPass(m_CommandBuffer);
+    BeginRenderPass(m_CommandBuffers[m_SwapChain->CurrentFrame()]);
 
-    Render();
+    Render(m_CommandBuffers[m_SwapChain->CurrentFrame()]);
 
-    EndRenderPass(m_CommandBuffer);
+    EndRenderPass(m_CommandBuffers[m_SwapChain->CurrentFrame()]);
 
-    EndFrame();
-
-
+    EndFrame(m_CommandBuffers[m_SwapChain->CurrentFrame()]);
 
 
   }
 
-  VkCommandBuffer VulkanRenderer::BeginFrame()
+  void VulkanRenderer::BeginFrame(VkCommandBuffer commandBuffer)
   {
-    vkResetCommandBuffer(m_CommandBuffer, 0);
+    vkResetCommandBuffer(commandBuffer, 0);
 
     VkCommandBufferBeginInfo beginInfo {};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     beginInfo.flags = 0;
     beginInfo.pInheritanceInfo = nullptr;
 
-    if(vkBeginCommandBuffer(m_CommandBuffer, &beginInfo) != VK_SUCCESS) {
+    if(vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
       throw std::runtime_error("Failed to Begin Command Buffer");
     }
-
-    return m_CommandBuffer;
   }
 
-  void VulkanRenderer::Render()
+  void VulkanRenderer::Render(VkCommandBuffer commandBuffer)
   {
-    m_Pipeline->Bind(m_CommandBuffer);
+    m_Pipeline->Bind(commandBuffer);
 
     VkViewport viewport{};
     viewport.x = 0.0f;
@@ -89,23 +90,23 @@ namespace Vulpine
     viewport.height = static_cast<float>(m_SwapChain->extent().height);
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
-    vkCmdSetViewport(m_CommandBuffer, 0, 1, &viewport);
+    vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
 
     VkRect2D scissor{};
     scissor.offset = {0,0};
     scissor.extent = m_SwapChain->extent();
-    vkCmdSetScissor(m_CommandBuffer, 0, 1, &scissor);
+    vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-    vkCmdDraw(m_CommandBuffer, 3, 1, 0, 0);
+    vkCmdDraw(commandBuffer, 3, 1, 0, 0);
   }
 
-  void VulkanRenderer::EndFrame()
+  void VulkanRenderer::EndFrame(VkCommandBuffer commandBuffer)
   {
-    if(vkEndCommandBuffer(m_CommandBuffer) != VK_SUCCESS) {
+    if(vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
       throw std::runtime_error("Failed to Record Command Buffer");
     }
 
-    auto result = m_SwapChain->SubmitCommandBuffers(&m_CommandBuffer, &m_ImageIndex);
+    auto result = m_SwapChain->SubmitCommandBuffers(&commandBuffer, &m_CurrentImage);
     if(result != VK_SUCCESS) {
       throw std::runtime_error("Failed to Present Image!");
     }
@@ -116,7 +117,7 @@ namespace Vulpine
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     renderPassInfo.renderPass = m_SwapChain->renderPass();
-    renderPassInfo.framebuffer = m_SwapChain->GetFrameBuffer(m_ImageIndex);
+    renderPassInfo.framebuffer = m_SwapChain->GetFrameBuffer(m_CurrentImage);
     renderPassInfo.renderArea.offset = {0,0};
     renderPassInfo.renderArea.extent = m_SwapChain->extent();
     VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
@@ -128,6 +129,6 @@ namespace Vulpine
 
   void VulkanRenderer::EndRenderPass(VkCommandBuffer commandBuffer)
   {
-    vkCmdEndRenderPass(m_CommandBuffer);
+    vkCmdEndRenderPass(commandBuffer);
   }
 }

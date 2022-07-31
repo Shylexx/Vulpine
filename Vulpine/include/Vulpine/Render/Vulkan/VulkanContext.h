@@ -52,8 +52,8 @@ namespace Vulpine
     VkSurfaceKHR m_Surface = VK_NULL_HANDLE;
     VkCommandPool m_CommandPool = VK_NULL_HANDLE;
 
-    VkQueue m_GraphicsQueue;
-    VkQueue m_PresentQueue;
+    VkQueue m_GraphicsQueue = VK_NULL_HANDLE;
+    VkQueue m_PresentQueue = VK_NULL_HANDLE;
 
     QueueFamilyIndices FindAvailableQueueFamilies(VkPhysicalDevice physicalDevice);
     bool IsPhysicalDeviceSuitable(VkPhysicalDevice physicalDevice);

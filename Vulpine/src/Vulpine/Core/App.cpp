@@ -4,6 +4,7 @@
 #include <imgui.h>
 
 #include <Vulpine/Render/Vulkan/VulkanRenderer.h>
+#include <vulkan/vulkan.h>
 
 namespace Vulpine
 {

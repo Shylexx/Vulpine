@@ -23,12 +23,15 @@ namespace Vulpine
     std::vector<VkImageView> imageViews() { return m_SwapChainImageViews; }
     std::vector<VkFramebuffer> frameBuffers() { return m_SwapChainFrameBuffers; }
     VkFramebuffer GetFrameBuffer(int index) { return m_SwapChainFrameBuffers[index]; }
+    uint32_t CurrentFrame() { return m_CurrentFrame; }
 
-    VkFence InFlightFence() { return m_InFlightFence; }
+    std::vector<VkFence> InFlightFences() { return m_InFlightFences; }
 
     void AcquireNextImage(uint32_t *imageIndex);
     VkResult SubmitCommandBuffers(const VkCommandBuffer *buffers, uint32_t *imageIndex);
-    VkResult PresentImage();
+
+
+    int MaxFrames() { return MAX_FRAMES_IN_FLIGHT; }
     
   private:
     VkSwapchainKHR m_SwapChain;
@@ -49,9 +52,12 @@ namespace Vulpine
     VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
     VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 
-    VkSemaphore m_ImageAvailableSemaphore;
-    VkSemaphore m_RenderFinishedSemaphore;
-    VkFence m_InFlightFence;
+    std::vector<VkSemaphore> m_ImageAvailableSemaphores;
+    std::vector<VkSemaphore> m_RenderFinishedSemaphores;
+    std::vector<VkFence> m_InFlightFences;
+
+    const int MAX_FRAMES_IN_FLIGHT = 2;
+    uint32_t m_CurrentFrame{ 0 };
 
     VulkanContext& m_Context;
   };
