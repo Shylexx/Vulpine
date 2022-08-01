@@ -1,10 +1,10 @@
 #include "GLFW/glfw3.h"
-#include "Vulpine/Render/Vulkan/VulkanContext.h"
+#include <Vulpine/Render/Vulkan/VulkanContext.h>
 #include <Vulpine/Render/Vulkan/VulkanSwapChain.h>
+#include <Vulpine/Core/App.h>
 #include <algorithm>
 #include <limits>
 #include <stdexcept>
-#include <vulkan/vulkan_core.h>
 
 namespace Vulpine
 {
@@ -133,6 +133,15 @@ namespace Vulpine
             vkDestroySemaphore(m_Context.logicalDevice(), m_RenderFinishedSemaphores[i], nullptr);
             vkDestroyFence(m_Context.logicalDevice(), m_InFlightFences[i], nullptr);
         }
+        
+        CleanupSwapChain();
+        
+
+        vkDestroyRenderPass(m_Context.logicalDevice(), m_RenderPass, nullptr);
+    }
+
+    void VulkanSwapChain::CleanupSwapChain()
+    {
         for (auto framebuffer : m_SwapChainFrameBuffers) {
             vkDestroyFramebuffer(m_Context.logicalDevice(), framebuffer, nullptr);
         }
@@ -142,8 +151,6 @@ namespace Vulpine
         }
 
         vkDestroySwapchainKHR(m_Context.logicalDevice(), m_SwapChain, nullptr);
-
-        vkDestroyRenderPass(m_Context.logicalDevice(), m_RenderPass, nullptr);
     }
 
     VkSurfaceFormatKHR VulkanSwapChain::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
@@ -258,12 +265,39 @@ namespace Vulpine
         }
     }
 
-    void VulkanSwapChain::AcquireNextImage(uint32_t* imageIndex)
+    void VulkanSwapChain::RecreateSwapChain()
+    {
+        auto extent = App::GetWindow()->getExtent();
+        while (extent.width == 0 || extent.height == 0) {
+            extent = App::GetWindow()->getExtent();
+            glfwWaitEvents();
+        }
+
+        vkDeviceWaitIdle(m_Context.logicalDevice());
+
+        CleanupSwapChain();
+
+        CreateSwapChain();
+        CreateImageViews();
+        CreateFrameBuffers();
+    }
+
+    bool VulkanSwapChain::AcquireNextImage(uint32_t* imageIndex)
     {
         vkWaitForFences(m_Context.logicalDevice(), 1, &m_InFlightFences[m_CurrentFrame], VK_TRUE, UINT64_MAX);
-        vkResetFences(m_Context.logicalDevice(), 1, &m_InFlightFences[m_CurrentFrame]);
+        
 
-        vkAcquireNextImageKHR(m_Context.logicalDevice(), m_SwapChain, UINT64_MAX, m_ImageAvailableSemaphores[m_CurrentFrame], VK_NULL_HANDLE, imageIndex);
+        auto result = vkAcquireNextImageKHR(m_Context.logicalDevice(), m_SwapChain, UINT64_MAX, m_ImageAvailableSemaphores[m_CurrentFrame], VK_NULL_HANDLE, imageIndex);
+        if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+            RecreateSwapChain();
+            return false;
+        }
+        else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+            throw std::runtime_error("Failed to Acquire Swap Chain Image!");
+        }
+
+        vkResetFences(m_Context.logicalDevice(), 1, &m_InFlightFences[m_CurrentFrame]);
+        return true;
     }
 
     VkResult VulkanSwapChain::SubmitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex)

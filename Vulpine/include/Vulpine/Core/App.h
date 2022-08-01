@@ -28,9 +28,9 @@ namespace Vulpine
         static void DebugLogProps();
 
         static App &GetInstance() { return *s_Instance; }
-        Window *GetWindow() const
+        static Window *GetWindow()
         {
-            return m_Window.get();
+            return s_Instance->m_Window.get();
         }
 
 		bool debugMode() { return m_DebugMode; }

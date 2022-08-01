@@ -4,6 +4,8 @@
 
 namespace Vulpine
 {
+	
+
 	Window::Window(const WindowProperties &props)
 	{
 		Init(props);
@@ -39,6 +41,9 @@ namespace Vulpine
 			std::cout << "Window Creation Failed" << std::endl;
 		}
 
+		glfwSetWindowUserPointer(m_Window, this);
+
+		glfwSetFramebufferSizeCallback(m_Window, framebufferResizeCallback);
 
 	}
 
@@ -50,7 +55,22 @@ namespace Vulpine
 
 	void Window::Update(float deltaTime)
 	{
-		glfwPollEvents();
+		//glfwPollEvents();
 		// m_Context->SwapBuffers();
+	}
+
+	void Window::CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface) {
+		if (glfwCreateWindowSurface(instance, m_Window, nullptr, surface) != VK_SUCCESS ) {
+			throw std::runtime_error("Failed to Create Window Surface!");
+		}
+	}
+
+	void Window::framebufferResizeCallback(GLFWwindow* window, int width, int height)
+	{
+		auto vpwindow = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+		vpwindow->m_FrameBufferResized = true;
+		vpwindow->m_Props.Width = width;
+		vpwindow->m_Props.Height = height;
+
 	}
 }

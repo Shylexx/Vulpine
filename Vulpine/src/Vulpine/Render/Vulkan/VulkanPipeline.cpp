@@ -3,7 +3,7 @@
 #include <Vulpine/Render/Vulkan/VulkanPipeline.h>
 #include <fstream>
 #include <stdexcept>
-#include <vulkan/vulkan_core.h>
+#include <filesystem>
 
 namespace Vulpine
 {
@@ -25,9 +25,13 @@ namespace Vulpine
 
   void VulkanPipeline::CreatePipeline()
   {
-    auto vertShaderCode = ReadFile("E:\\dev\\Vulpine\\build\\SandboxApp\\Debug\\shaders\\vert.spv");
-    auto fragShaderCode = ReadFile("E:\\dev\\Vulpine\\build\\SandboxApp\\Debug\\shaders\\frag.spv");
-
+#ifdef __linux__
+    auto vertShaderCode = ReadFile("./shaders/vert.spv");
+    auto fragShaderCode = ReadFile("./shaders/frag.spv");
+#else 
+    auto vertShaderCode = ReadFile(".\\Debug\\shaders\\vert.spv");
+    auto fragShaderCode = ReadFile(".\\Debug\\shaders\\frag.spv");
+#endif
     VkShaderModule vertShaderModule = CreateShaderModule(vertShaderCode);
     VkShaderModule fragShaderModule = CreateShaderModule(fragShaderCode);
 

@@ -49,10 +49,13 @@ namespace Vulpine
 
   void VulkanRenderer::DrawFrame()
   {
-    m_SwapChain->AcquireNextImage(&m_CurrentImage);
-
-    
-    BeginFrame(m_CommandBuffers[m_SwapChain->CurrentFrame()]);
+    // Skips Frame Draw if New Swap Chain Created
+    if (!m_SwapChain->AcquireNextImage(&m_CurrentImage))
+    {
+        return;
+    }
+   
+    BeginRecordCommand(m_CommandBuffers[m_SwapChain->CurrentFrame()]);
 
     BeginRenderPass(m_CommandBuffers[m_SwapChain->CurrentFrame()]);
 
@@ -60,12 +63,11 @@ namespace Vulpine
 
     EndRenderPass(m_CommandBuffers[m_SwapChain->CurrentFrame()]);
 
-    EndFrame(m_CommandBuffers[m_SwapChain->CurrentFrame()]);
-
+    EndRecordCommand(m_CommandBuffers[m_SwapChain->CurrentFrame()]);
 
   }
 
-  void VulkanRenderer::BeginFrame(VkCommandBuffer commandBuffer)
+  void VulkanRenderer::BeginRecordCommand(VkCommandBuffer commandBuffer)
   {
     vkResetCommandBuffer(commandBuffer, 0);
 
@@ -100,15 +102,20 @@ namespace Vulpine
     vkCmdDraw(commandBuffer, 3, 1, 0, 0);
   }
 
-  void VulkanRenderer::EndFrame(VkCommandBuffer commandBuffer)
+  void VulkanRenderer::EndRecordCommand(VkCommandBuffer commandBuffer)
   {
     if(vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
       throw std::runtime_error("Failed to Record Command Buffer");
     }
 
-    auto result = m_SwapChain->SubmitCommandBuffers(&commandBuffer, &m_CurrentImage);
-    if(result != VK_SUCCESS) {
-      throw std::runtime_error("Failed to Present Image!");
+    auto swapChainStatus = m_SwapChain->SubmitCommandBuffers(&commandBuffer, &m_CurrentImage);
+    if (swapChainStatus == VK_ERROR_OUT_OF_DATE_KHR || swapChainStatus == VK_SUBOPTIMAL_KHR || App::GetWindow()->wasWindowResized())
+    {
+        App::GetWindow()->resetWindowResizedFlag();
+        m_SwapChain->RecreateSwapChain();
+    }
+    else if (swapChainStatus != VK_SUCCESS) {
+        throw std::runtime_error("Failed to Present Image from Swap Chain");
     }
   }
 

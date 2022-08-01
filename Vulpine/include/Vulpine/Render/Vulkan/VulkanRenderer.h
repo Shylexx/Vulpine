@@ -21,9 +21,9 @@ public:
 	void Cleanup();
 
   void DrawFrame();
-  void BeginFrame(VkCommandBuffer commandBuffer);
+  void BeginRecordCommand(VkCommandBuffer commandBuffer);
   void Render(VkCommandBuffer commandBuffer);
-  void EndFrame(VkCommandBuffer commandBuffer);
+  void EndRecordCommand(VkCommandBuffer commandBuffer);
 private:
   std::unique_ptr<VulkanContext> m_Context;
   std::unique_ptr<VulkanSwapChain> m_SwapChain;

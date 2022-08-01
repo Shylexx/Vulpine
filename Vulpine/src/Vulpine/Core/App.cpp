@@ -20,7 +20,6 @@ namespace Vulpine
 
     App::~App()
     {
-        glfwTerminate();
     }
 
     void App::DebugLogProps()
@@ -55,6 +54,7 @@ namespace Vulpine
             }
         }
 
+        std::cout << "Renderer Cleanup" << std::endl;
         m_Renderer->Cleanup();
 
     }

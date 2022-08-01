@@ -14,6 +14,7 @@ namespace Vulpine
     ~VulkanSwapChain() = default;
     void Init();
     void Cleanup();
+    void RecreateSwapChain();
 
     VkSwapchainKHR swapChain() { return m_SwapChain; }
     VkExtent2D extent() { return m_SwapChainExtent; }
@@ -26,8 +27,10 @@ namespace Vulpine
     uint32_t CurrentFrame() { return m_CurrentFrame; }
 
     std::vector<VkFence> InFlightFences() { return m_InFlightFences; }
+    VkFence GetInFlightFence(int index) { return m_InFlightFences[index]; }
+    VkFence GetCurrentFlightFence() { return m_InFlightFences[m_CurrentFrame]; }
 
-    void AcquireNextImage(uint32_t *imageIndex);
+    bool AcquireNextImage(uint32_t *imageIndex);
     VkResult SubmitCommandBuffers(const VkCommandBuffer *buffers, uint32_t *imageIndex);
 
 
@@ -43,10 +46,13 @@ namespace Vulpine
     std::vector<VkFramebuffer> m_SwapChainFrameBuffers;
 
     void CreateSwapChain();
+    
     void CreateImageViews();
     void CreateRenderPass();
     void CreateFrameBuffers();
     void CreateSyncObjects();
+
+    void CleanupSwapChain();
     
     VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
     VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
@@ -58,6 +64,8 @@ namespace Vulpine
 
     const int MAX_FRAMES_IN_FLIGHT = 2;
     uint32_t m_CurrentFrame{ 0 };
+
+    bool m_FrameBufferResized = false;
 
     VulkanContext& m_Context;
   };

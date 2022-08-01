@@ -2,7 +2,9 @@
 #define __VP_WINDOW_H__
 
 #include <sstream>
+#include <vulkan/vulkan.h>
 #include <GLFW/glfw3.h>
+
 
 namespace Vulpine
 {
@@ -30,10 +32,18 @@ namespace Vulpine
 
 		virtual GLFWwindow* GetWindow() const { return m_Window; }
 
+		bool shouldClose() { return glfwWindowShouldClose(m_Window); }
+		VkExtent2D getExtent() { return { static_cast<uint32_t>(m_Props.Width), static_cast<uint32_t>(m_Props.Height) }; }
+		bool wasWindowResized() { return m_FrameBufferResized; }
+		void resetWindowResizedFlag() { m_FrameBufferResized = false; }
+		void CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
+
 	private:
 		void Init(const WindowProperties &props);
 		void Cleanup();
-
+		
+		static void framebufferResizeCallback(GLFWwindow* window, int width, int height);
+		bool m_FrameBufferResized = false;
 	private:
 		WindowProperties m_Props;
 		GLFWwindow *m_Window;

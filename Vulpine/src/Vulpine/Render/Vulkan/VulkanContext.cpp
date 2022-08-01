@@ -36,7 +36,8 @@ namespace Vulpine
     std::cout << "Setup Debug Messenger" << std::endl;
     SetupDebugMessenger();
     std::cout << "Create Surface" << std::endl;
-    CreateSurface();
+    //CreateSurface();
+    App::GetWindow()->CreateWindowSurface(m_Instance, &m_Surface);
     std::cout << "Pick Physical Device" << std::endl;
     PickPhysicalDevice();
     std::cout << "Create Logical Device" << std::endl;
