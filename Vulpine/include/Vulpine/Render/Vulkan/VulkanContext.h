@@ -26,13 +26,11 @@ namespace Vulpine
   class VulkanContext
   {
   public:
-      VulkanContext(Window* window);
+      VulkanContext();
       ~VulkanContext() = default;
 
     void CreateContext();
     void Cleanup();
-
-    Window* GetWindow() { return m_Window; }
 
     VkDevice logicalDevice() { return m_LogicalDevice; }
     VkSurfaceKHR surface() { return m_Surface; }
@@ -62,7 +60,6 @@ namespace Vulpine
     void SetupDebugMessenger();
     void PickPhysicalDevice();
     void CreateLogicalDevice();
-    void CreateSurface();
     void CreateCommandPool();
 
     bool m_EnableValidationLayers = true;
@@ -76,8 +73,6 @@ namespace Vulpine
     std::vector<const char *> GetRequiredExtensions();
 
     SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice physicalDevice);
-
-    Window* m_Window;
 
     const std::vector<const char*> m_ValidationLayers = { "VK_LAYER_KHRONOS_validation" };
     const std::vector<const char*> m_DeviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };

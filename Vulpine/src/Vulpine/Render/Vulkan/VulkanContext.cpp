@@ -24,8 +24,7 @@ namespace Vulpine
         return VK_FALSE;
     }
 
-    VulkanContext::VulkanContext(Window* window)
-        : m_Window(window)
+    VulkanContext::VulkanContext()
     {
     }
 
@@ -208,13 +207,6 @@ namespace Vulpine
     if(vkCreateCommandPool(m_LogicalDevice, &poolInfo, nullptr, &m_CommandPool) != VK_SUCCESS) {
       throw std::runtime_error("Failed to Create Command Pool!");
     }
-  }
-
-  void VulkanContext::CreateSurface()
-  {
-      if (glfwCreateWindowSurface(m_Instance, m_Window->GetWindow(), nullptr, &m_Surface) != VK_SUCCESS) {
-          throw std::runtime_error("failed to create window surface!");
-      }
   }
 
   bool VulkanContext::CheckValidationLayerSupport()

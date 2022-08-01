@@ -9,7 +9,7 @@ namespace Vulpine
 
 	VulkanRenderer::VulkanRenderer(Window *window)
 	{
-		m_Context = std::make_unique<VulkanContext>(window);
+	m_Context = std::make_unique<VulkanContext>();
     m_SwapChain = std::make_unique<VulkanSwapChain>(*m_Context);
     m_Pipeline = std::make_unique<VulkanPipeline>(*m_Context, *m_SwapChain);
 	}

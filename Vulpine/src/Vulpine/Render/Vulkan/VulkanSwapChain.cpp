@@ -179,7 +179,7 @@ namespace Vulpine
         }
         else {
             int width, height;
-            glfwGetFramebufferSize(m_Context.GetWindow()->GetWindow(), &width, &height);
+            glfwGetFramebufferSize(App::GetWindow()->GetWindow(), &width, &height);
 
             VkExtent2D actualExtent = {
               static_cast<uint32_t>(width),
