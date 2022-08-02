@@ -33,6 +33,7 @@ set(VULPINE_HEADERS
     include/Vulpine/Render/Vulkan/VulkanContext.h
     include/Vulpine/Render/Vulkan/VulkanSwapChain.h
     include/Vulpine/Render/Vulkan/VulkanPipeline.h
+    include/Vulpine/Scene/CoreComponents.h
 )
 
 set(VULPINE_SOURCES
