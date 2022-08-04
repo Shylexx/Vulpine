@@ -9,7 +9,7 @@ class ImGuiLayer;
 namespace Vulpine {
 	class ImGuiScene : public Scene {
 	public:
-		virtual void Update(float deltaTime) override;
+		virtual void Update(float deltaTime);
 	private:
 		ImGuiLayer* m_ImGuiLayer;
 	};

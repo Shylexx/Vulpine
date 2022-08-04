@@ -7,3 +7,6 @@
 [submodule "Vulpine/external/imgui"]
 	path = Vulpine/external/imgui
 	url = https://github.com/Shylexx/imgui-docking
+[submodule "Vulpine/external/entt"]
+	path = Vulpine/external/entt
+	url = https://github.com/skypjack/entt

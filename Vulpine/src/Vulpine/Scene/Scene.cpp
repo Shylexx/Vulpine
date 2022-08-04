@@ -2,7 +2,7 @@
 
 namespace Vulpine {
 	void Scene::Update(float deltaTime) {
-		for (Layer* layer : m_Layers)
-			layer->Update(deltaTime);
-	}
+		//for (Layer* layer : m_Layers)
+			//layer->Update(deltaTime);
+  }
 }
