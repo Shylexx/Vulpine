@@ -25,7 +25,7 @@ set(VULPINE_HEADERS
     include/Vulpine/Core/App.h
     include/Vulpine/Core/Window.h
     include/Vulpine/Scene/Scene.h
-    include/Vulpine/Scene/Layer.h
+    include/Vulpine/Core/Layer.h
     include/Vulpine/ImGui/ImGuiApp.h
     include/Vulpine/ImGui/ImGuiLayer.h
     include/Vulpine/ImGui/ImGuiScene.h
@@ -41,7 +41,7 @@ set(VULPINE_SOURCES
     src/Vulpine/Core/App.cpp
     src/Vulpine/Core/Window.cpp
     src/Vulpine/Scene/Scene.cpp
-    src/Vulpine/Scene/Layer.cpp
+    src/Vulpine/Core/Layer.cpp
     src/Vulpine/ImGui/ImGuiApp.cpp
     src/Vulpine/ImGui/ImGuiLayer.cpp
     src/Vulpine/ImGui/ImGuiScene.cpp
