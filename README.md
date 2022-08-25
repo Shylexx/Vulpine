@@ -7,3 +7,8 @@
 - None :D
 
 Complete Rest Later
+
+### Dependencies
+
+Vulkan 1.3
+EnTT
