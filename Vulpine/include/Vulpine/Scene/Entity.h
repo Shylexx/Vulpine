@@ -3,20 +3,23 @@
 
 #include <Vulpine/Scene/Scene.h>
 
-class Entity
-{
-public:
-  Entity(Scene* scene);
+namespace Vulpine {
 
-  template<typename Comp>
-  void AddComponent() {
-    m_Scene->registry.AddComponent<Comp>(m_EntityID);
-  }
+    class Entity
+    {
+    public:
+        Entity(Scene* scene);
 
-private:
-  Scene* m_Scene;
-  int m_EntityID;
+        template<typename Comp>
+        void AddComponent() {
+            m_Scene->m_Registry.emplace<Comp>();
+        }
 
-};
+    private:
+        Scene* m_Scene;
+        int m_EntityID;
 
+    };
+
+}
 #endif

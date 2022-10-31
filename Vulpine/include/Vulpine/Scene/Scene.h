@@ -2,6 +2,7 @@
 #define __VP_SCENE_H__
 
 #include <string>
+#include <entt/entt.hpp>
 
 namespace Vulpine {
 
@@ -19,13 +20,13 @@ namespace Vulpine {
     void Stop();
 
     void Update(float deltaTime);
+    entt::registry m_Registry;
   private:
     template<typename T>
     void OnComponentAdded(Entity entity, T& component);
 
     void RenderScene();
 	private:
-    int m_Registry;
 	};
 }
 

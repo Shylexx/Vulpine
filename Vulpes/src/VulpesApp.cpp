@@ -5,14 +5,14 @@
 
 #include "Editor.h"
 
-class SandboxApp : public Vulpine::ImGuiApp
+class SandboxApp : public Vulpine::App
 {
 public:
     Editor editor;
 
     SandboxApp()
     {
-        editor.RenderEditor();
+        //editor.RenderEditor();
 
         // Planned Future API
         // LoadStartupScene();
