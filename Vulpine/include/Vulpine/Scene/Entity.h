@@ -16,14 +16,14 @@ namespace Vulpine {
         Comp& AddComponent(Args&&... args) {
             Comp& component = m_Scene->m_Registry.emplace<Comp>(m_EntityHandle, std::forward<Args>(args)...);
             m_Scene->OnComponentAdded<Comp>(*this, component);
-            return component
+            return component;
         }
 
         template<typename Comp, typename... Args>
         Comp& AddOrReplaceComponent(Args&&... args) {
             Comp& component = m_Scene->m_Registry.emplace_or_replace<Comp>(m_EntityHandle, std::forward<Args>(args)...);
             m_Scene->OnComponentAdded<Comp>(*this, component);
-            return component
+            return component;
         }
 
         template<typename Comp>
@@ -35,7 +35,6 @@ namespace Vulpine {
         template<typename Comp>
         bool HasComponent()
         {
-            m_Scene->m_Registry.
             return m_Scene->m_Registry.all_of<Comp>(m_EntityHandle);
         }
 
