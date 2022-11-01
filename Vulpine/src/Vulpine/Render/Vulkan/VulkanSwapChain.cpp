@@ -267,9 +267,10 @@ namespace Vulpine
 
     void VulkanSwapChain::RecreateSwapChain()
     {
-        auto extent = App::GetWindow()->getExtent();
-        while (extent.width == 0 || extent.height == 0) {
-            extent = App::GetWindow()->getExtent();
+        int width = 0, height = 0;
+        glfwGetFramebufferSize(App::GetWindow()->GetWindow(), &width, &height);
+        while (width == 0 || height == 0) {
+            glfwGetFramebufferSize(App::GetWindow()->GetWindow(), &width, &height);
             glfwWaitEvents();
         }
 

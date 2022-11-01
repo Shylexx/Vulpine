@@ -62,7 +62,7 @@ namespace Vulpine
     void App::Update(float deltaTime)
     {
         m_Window->Update(deltaTime);
-        // m_CurrentScene->Update(deltaTime);
+        m_CurrentScene->Update(deltaTime);
         // std::cout << "Update" << std::endl;
     }
 

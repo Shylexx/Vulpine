@@ -2,23 +2,52 @@
 #define __VP_ENTITY_H__
 
 #include <Vulpine/Scene/Scene.h>
+#include <utility>
 
 namespace Vulpine {
 
     class Entity
     {
     public:
-        Entity(Scene* scene);
+        Entity() = default;
+        Entity(entt::entity handle, Scene* scene);
 
-        template<typename Comp>
-        void AddComponent() {
-            m_Scene->m_Registry.emplace<Comp>();
+        template<typename Comp, typename... Args>
+        Comp& AddComponent(Args&&... args) {
+            Comp& component = m_Scene->m_Registry.emplace<Comp>(m_EntityHandle, std::forward<Args>(args)...);
+            m_Scene->OnComponentAdded<Comp>(*this, component);
+            return component
         }
 
-    private:
-        Scene* m_Scene;
-        int m_EntityID;
+        template<typename Comp, typename... Args>
+        Comp& AddOrReplaceComponent(Args&&... args) {
+            Comp& component = m_Scene->m_Registry.emplace_or_replace<Comp>(m_EntityHandle, std::forward<Args>(args)...);
+            m_Scene->OnComponentAdded<Comp>(*this, component);
+            return component
+        }
 
+        template<typename Comp>
+        Comp& GetComponent()
+        {
+            return m_Scene->m_Registry.get<Comp>(m_EntityHandle);
+        }
+
+        template<typename Comp>
+        bool HasComponent()
+        {
+            m_Scene->m_Registry.
+            return m_Scene->m_Registry.all_of<Comp>(m_EntityHandle);
+        }
+
+        template<typename Comp>
+        void RemoveComponent()
+        {
+            m_Scene->m_Registry.remove<Comp>(m_EntityHandle);
+        }
+
+        entt::entity m_EntityHandle{ entt::null };
+    private:
+        Scene* m_Scene = nullptr;
     };
 
 }
