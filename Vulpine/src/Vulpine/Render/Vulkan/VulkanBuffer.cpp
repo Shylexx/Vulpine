@@ -3,6 +3,7 @@
 #include <cstring>
 #include <vulkan/vulkan.h>
 #include <stdexcept>
+#include <iostream>
 
 namespace Vulpine {
 
@@ -60,6 +61,8 @@ namespace Vulpine {
       throw std::runtime_error("Failed to Create Buffer!");
     }
 
+    m_BufferSize = (size_t)bufferInfo.size;
+
     // Querying Memory Requirements
     VkMemoryRequirements memRequirements;
     vkGetBufferMemoryRequirements(m_Context.logicalDevice(), m_Buffer, &memRequirements);
@@ -75,18 +78,45 @@ namespace Vulpine {
 
     vkBindBufferMemory(m_Context.logicalDevice(), m_Buffer, m_Memory, 0);
 
-    // Map buffer memory into cpu accessible memory
-    // Accesses a region of memory resource (0 is offset, bufferInfo.size is size)
-    void* data;
-    vkMapMemory(m_Context.logicalDevice(), m_Memory, 0, bufferInfo.size, 0, &data);
     // Copy the vertex data into the buffer memory
-    memcpy(data, vertices.data(), (size_t)bufferInfo.size);
-    vkUnmapMemory(m_Context.logicalDevice(), m_Memory);
+    if(map(bufferInfo.size, 0) == VK_SUCCESS) {
+      //memcpy(m_MappedData, vertices.data(), (size_t)bufferInfo.size);
+      WriteToBuffer((void*)vertices.data(), m_BufferSize);
+      unmap();
+    } else {
+      std::cerr << "Could not map buffer memory" << std::endl;
+    }
   }
 
   void VulkanBuffer::Cleanup() {
     vkDestroyBuffer(m_Context.logicalDevice(), m_Buffer, nullptr);
     vkFreeMemory(m_Context.logicalDevice(), m_Memory, nullptr);
+  }
+
+  VkResult VulkanBuffer::map(VkDeviceSize size, VkDeviceSize offset) {
+    return vkMapMemory(m_Context.logicalDevice(), m_Memory, offset, size, 0, &m_MappedData);
+  }
+
+  void VulkanBuffer::unmap() {
+    if(m_MappedData) {
+      vkUnmapMemory(m_Context.logicalDevice(), m_Memory);
+      m_MappedData = nullptr;
+    }
+  }
+
+  void VulkanBuffer::WriteToBuffer(void *data, VkDeviceSize size, VkDeviceSize offset) {
+    if (!m_MappedData) {
+      std::cerr << "Could not Write to buffer with no mapped data!" << std::endl;
+      return;
+    }
+
+    if (size == VK_WHOLE_SIZE) {
+      memcpy(m_MappedData, data, m_BufferSize);
+    } else {
+      char* memOffset = (char*)m_MappedData;
+      memOffset += offset;
+      memcpy(memOffset, data, size);
+    }
   }
 
   uint32_t VulkanBuffer::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
