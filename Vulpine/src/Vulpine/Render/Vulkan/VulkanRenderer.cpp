@@ -9,16 +9,18 @@ namespace Vulpine
 
 	VulkanRenderer::VulkanRenderer(Window *window)
 	{
-	m_Context = std::make_unique<VulkanContext>();
+	  m_Context = std::make_unique<VulkanContext>();
     m_SwapChain = std::make_unique<VulkanSwapChain>(*m_Context);
     m_Pipeline = std::make_unique<VulkanPipeline>(*m_Context, *m_SwapChain);
+    m_VertexBuffer = std::make_unique<VulkanBuffer>(*m_Context);
 	}
 
 	void VulkanRenderer::Init()
 	{
-	m_Context->CreateContext();
+	  m_Context->CreateContext();
     m_SwapChain->Init();
     m_Pipeline->Init();
+    m_VertexBuffer->Init();
     CreateCommandBuffers();
 	}
 
@@ -27,8 +29,9 @@ namespace Vulpine
     vkDeviceWaitIdle(m_Context->logicalDevice());
 
     m_SwapChain->Cleanup();
+    m_VertexBuffer->Cleanup();
     m_Pipeline->Cleanup();
-	m_Context->Cleanup();
+	  m_Context->Cleanup();
     
 	}
 
@@ -99,7 +102,12 @@ namespace Vulpine
     scissor.extent = m_SwapChain->extent();
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-    vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+    // Binding Vertex Buffer
+    VkBuffer vertexBuffers[] = { m_VertexBuffer->buffer() };
+    VkDeviceSize offsets[] = {0};
+    vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+
+    vkCmdDraw(commandBuffer, static_cast<uint32_t>(vertices.size()), 1, 0, 0);
   }
 
   void VulkanRenderer::EndRecordCommand(VkCommandBuffer commandBuffer)

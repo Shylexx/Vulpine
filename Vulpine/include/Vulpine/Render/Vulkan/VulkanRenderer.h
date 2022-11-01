@@ -4,6 +4,7 @@
 #include <Vulpine/Render/Vulkan/VulkanPipeline.h>
 #include <Vulpine/Render/Vulkan/VulkanContext.h>
 #include <Vulpine/Render/Vulkan/VulkanSwapChain.h>
+#include <Vulpine/Render/Vulkan/VulkanBuffer.h>
 #include <Vulpine/Core/Window.h>
 #include <GLFW/glfw3.h>
 #include <memory>
@@ -28,6 +29,7 @@ private:
   std::unique_ptr<VulkanContext> m_Context;
   std::unique_ptr<VulkanSwapChain> m_SwapChain;
   std::unique_ptr<VulkanPipeline> m_Pipeline;
+  std::unique_ptr<VulkanBuffer> m_VertexBuffer;
 
   void CreateCommandBuffers();
 

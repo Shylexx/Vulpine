@@ -33,6 +33,7 @@ namespace Vulpine
     void Cleanup();
 
     VkDevice logicalDevice() { return m_LogicalDevice; }
+    VkPhysicalDevice physicalDevice() { return m_PhysicalDevice; }
     VkSurfaceKHR surface() { return m_Surface; }
     VkQueue graphicsQueue() { return m_GraphicsQueue; }
     VkQueue presentQueue() { return m_PresentQueue; }

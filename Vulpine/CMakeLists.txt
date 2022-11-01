@@ -31,6 +31,7 @@ set(VULPINE_HEADERS
     include/Vulpine/Render/Vulkan/VulkanContext.h
     include/Vulpine/Render/Vulkan/VulkanSwapChain.h
     include/Vulpine/Render/Vulkan/VulkanPipeline.h
+    include/Vulpine/Render/Vulkan/VulkanBuffer.h
     include/Vulpine/Scene/CoreComponents.h
     include/Vulpine/Scene/Entity.h
 )
@@ -45,6 +46,7 @@ set(VULPINE_SOURCES
     src/Vulpine/Render/Vulkan/VulkanContext.cpp
     src/Vulpine/Render/Vulkan/VulkanSwapChain.cpp
     src/Vulpine/Render/Vulkan/VulkanPipeline.cpp
+    src/Vulpine/Render/Vulkan/VulkanBuffer.cpp
     src/Vulpine/Scene/Entity.cpp
 )
 
