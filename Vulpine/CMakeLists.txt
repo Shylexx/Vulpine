@@ -7,8 +7,8 @@ set(CMAKE_CXX_STANDARD 20)
 add_subdirectory(external/glm)
 add_subdirectory(external/glfw)
 add_subdirectory(external)
-add_subdirectory(external/glad)
 add_subdirectory(external/entt)
+add_subdirectory(external/VMA)
 
 # Add Vulkan
 find_package(Vulkan REQUIRED)
@@ -61,8 +61,8 @@ target_include_directories(${PROJECT_NAME}
     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
     glm
     glfw
+    VMA
     external/imgui
-    external/glad/include
     ${Vulkan_INCLUDE_DIRS}
 )
 
@@ -71,7 +71,7 @@ target_link_libraries(${PROJECT_NAME}
     glm
     glfw
     ImGui
-    glad
+    VulkanMemoryAllocator
     ${Vulkan_LIBRARIES}
     EnTT::EnTT
 )

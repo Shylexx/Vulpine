@@ -2,6 +2,7 @@
 #define __VK_VERTEX_BUFFER_H__
 
 #include "Vulpine/Render/Vulkan/VulkanContext.h"
+#include <vk_mem_alloc.h>
 #include <array>
 #include <vector>
 #include <vulkan/vulkan.h>
