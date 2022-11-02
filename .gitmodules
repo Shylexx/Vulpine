@@ -10,3 +10,6 @@
 [submodule "Vulpine/external/entt"]
 	path = Vulpine/external/entt
 	url = https://github.com/skypjack/entt
+[submodule "Vulpine/external/VMA"]
+	path = Vulpine/external/VMA
+	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
