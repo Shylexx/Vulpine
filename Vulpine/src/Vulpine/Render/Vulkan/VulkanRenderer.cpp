@@ -35,7 +35,7 @@ namespace Vulpine
         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
         0,
         VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT);
-    m_StagingBuffer->CopyToAndCleanup(*m_VertexBuffer);
+    m_StagingBuffer->CopyToAndCleanup(*m_VertexBuffer, bufferSize);
     CreateCommandBuffers();
 	}
 

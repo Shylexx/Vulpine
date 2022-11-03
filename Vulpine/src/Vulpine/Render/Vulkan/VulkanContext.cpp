@@ -1,5 +1,3 @@
-#define VMA_IMPLEMENTATION
-#include <vk_mem_alloc.h>
 #include <GLFW/glfw3.h>
 
 #include <Vulpine/Render/Vulkan/VulkanContext.h>
@@ -10,6 +8,8 @@
 #include <iostream>
 #include <string>
 #include <set>
+#define VMA_IMPLEMENTATION
+#include <vk_mem_alloc.h>
 
 namespace Vulpine
 {
