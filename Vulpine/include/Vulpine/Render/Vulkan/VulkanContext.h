@@ -2,10 +2,9 @@
 #define __VK_CONTEXT_H__
 
 #include <Vulpine/Core/Window.h>
-#include <vulkan/vulkan.h>
+#include <vma/vk_mem_alloc.h>
 #include <vector>
 #include <optional>
-#include <vulkan/vulkan_core.h>
 
 namespace Vulpine
 {
@@ -38,12 +37,14 @@ namespace Vulpine
     VkQueue graphicsQueue() { return m_GraphicsQueue; }
     VkQueue presentQueue() { return m_PresentQueue; }
     VkCommandPool commandPool() { return m_CommandPool; }
+    VmaAllocator allocator() { return m_Allocator; }
 
     SwapChainSupportDetails PhysicalDeviceSwapChainSupport();
     QueueFamilyIndices PhysicalDeviceQueueFamilies();
   private:
 
 
+    VmaAllocator m_Allocator = VK_NULL_HANDLE;
     VkDevice m_LogicalDevice = VK_NULL_HANDLE;
     VkPhysicalDevice m_PhysicalDevice = VK_NULL_HANDLE;
     VkInstance m_Instance = VK_NULL_HANDLE;
@@ -62,6 +63,7 @@ namespace Vulpine
     void PickPhysicalDevice();
     void CreateLogicalDevice();
     void CreateCommandPool();
+    void CreateAllocator();
 
     bool m_EnableValidationLayers = true;
 

@@ -1,4 +1,5 @@
-#include <vulkan/vulkan.h>
+#define VMA_IMPLEMENTATION
+#include <vma/vk_mem_alloc.h>
 #include <GLFW/glfw3.h>
 
 #include <Vulpine/Render/Vulkan/VulkanContext.h>
@@ -43,6 +44,8 @@ namespace Vulpine
     CreateLogicalDevice();
     std::cout << "Create Command Pool" << std::endl;
     CreateCommandPool();
+    std::cout << "Create Allocator" << std::endl;
+    CreateAllocator();
   }
 
   void VulkanContext::Cleanup()
@@ -207,6 +210,16 @@ namespace Vulpine
     if(vkCreateCommandPool(m_LogicalDevice, &poolInfo, nullptr, &m_CommandPool) != VK_SUCCESS) {
       throw std::runtime_error("Failed to Create Command Pool!");
     }
+  }
+
+  void VulkanContext::CreateAllocator() {
+      VmaAllocatorCreateInfo allocatorInfo{};
+      allocatorInfo.device = m_LogicalDevice;
+      allocatorInfo.physicalDevice = m_PhysicalDevice;
+      allocatorInfo.instance = m_Instance;
+      allocatorInfo.vulkanApiVersion = VK_API_VERSION_1_3;
+
+      vmaCreateAllocator(&allocatorInfo, &m_Allocator);
   }
 
   bool VulkanContext::CheckValidationLayerSupport()
