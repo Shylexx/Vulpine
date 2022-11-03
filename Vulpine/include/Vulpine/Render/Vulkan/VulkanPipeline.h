@@ -15,10 +15,11 @@ namespace Vulpine
     VulkanPipeline(VulkanContext& context, VulkanSwapChain& swapChain);
     ~VulkanPipeline() = default;
 
-    void Init();
+    void Init(VkDescriptorSetLayout descriptorLayout);
     void Cleanup();
 
     void Bind(VkCommandBuffer commandBuffer);
+    VkPipelineLayout layout() { return m_Layout; }
   private:
 
     VulkanContext& m_Context;
@@ -27,7 +28,7 @@ namespace Vulpine
     VkPipeline m_Pipeline = VK_NULL_HANDLE;
     VkPipelineLayout m_Layout = VK_NULL_HANDLE;
 
-    void CreatePipeline();
+    void CreatePipeline(VkDescriptorSetLayout descriptorLayout);
 
     std::vector<char> ReadFile(const std::string& filepath);
 

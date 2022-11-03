@@ -107,7 +107,7 @@ namespace Vulpine {
 		vkFreeCommandBuffers(m_Context.logicalDevice(), m_Context.commandPool(), 1, &commandBuffer);
 	}
 
-	VkResult VulkanBuffer::map(VkDeviceSize size, VkDeviceSize offset) {
+	VkResult VulkanBuffer::map() {
 		return vmaMapMemory(m_Context.allocator(), m_Allocation, &m_MappedData);
 	}
 
@@ -118,19 +118,19 @@ namespace Vulpine {
 		}
 	}
 
-	void VulkanBuffer::WriteToBuffer(void* data, VkDeviceSize size, VkDeviceSize offset) {
+	void VulkanBuffer::WriteToBuffer(void* data, VkDeviceSize dataSize, VkDeviceSize offset) {
 		if (!m_MappedData) {
 			std::cerr << "Could not Write to buffer with no mapped data!" << std::endl;
 			return;
 		}
 
-		if (size == VK_WHOLE_SIZE) {
+		if (dataSize == VK_WHOLE_SIZE) {
 			memcpy(m_MappedData, data, m_BufferSize);
 		}
 		else {
 			char* memOffset = (char*)m_MappedData;
 			memOffset += offset;
-			memcpy(memOffset, data, size);
+			memcpy(memOffset, data, dataSize);
 		}
 
 	}

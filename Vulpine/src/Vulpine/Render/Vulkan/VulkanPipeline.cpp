@@ -13,9 +13,9 @@ namespace Vulpine
   {
   }
 
-  void VulkanPipeline::Init()
+  void VulkanPipeline::Init(VkDescriptorSetLayout descriptorSetLayout)
   {
-      CreatePipeline();
+      CreatePipeline(descriptorSetLayout);
   }
 
   void VulkanPipeline::Cleanup()
@@ -24,14 +24,14 @@ namespace Vulpine
     vkDestroyPipelineLayout(m_Context.logicalDevice(), m_Layout, nullptr);
   }
 
-  void VulkanPipeline::CreatePipeline()
+  void VulkanPipeline::CreatePipeline(VkDescriptorSetLayout descriptorLayout)
   {
 #ifdef __linux__
-    auto vertShaderCode = ReadFile("./shaders/vert.spv");
-    auto fragShaderCode = ReadFile("./shaders/frag.spv");
+    auto vertShaderCode = ReadFile("../../shaders/vert.spv");
+    auto fragShaderCode = ReadFile("../../shaders/frag.spv");
 #else 
-    auto vertShaderCode = ReadFile(".\\Debug\\shaders\\vert.spv");
-    auto fragShaderCode = ReadFile(".\\Debug\\shaders\\frag.spv");
+    auto vertShaderCode = ReadFile("..\\shaders\\ubovert.spv");
+    auto fragShaderCode = ReadFile("..\\shaders\\ubofrag.spv");
 #endif
     VkShaderModule vertShaderModule = CreateShaderModule(vertShaderCode);
     VkShaderModule fragShaderModule = CreateShaderModule(fragShaderCode);
@@ -80,7 +80,7 @@ namespace Vulpine
     rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
     rasterizer.lineWidth = 1.0f;
     rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-    rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+    rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
     rasterizer.depthBiasEnable = VK_FALSE;
     rasterizer.depthBiasConstantFactor = 0.0f;
     rasterizer.depthBiasClamp = 0.0f;
@@ -129,8 +129,8 @@ namespace Vulpine
 
     VkPipelineLayoutCreateInfo layoutInfo{};
     layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    layoutInfo.setLayoutCount = 0;
-    layoutInfo.pSetLayouts = nullptr;
+    layoutInfo.setLayoutCount = 1;
+    layoutInfo.pSetLayouts = &descriptorLayout;
     layoutInfo.pushConstantRangeCount = 0;
     layoutInfo.pPushConstantRanges = nullptr;
 

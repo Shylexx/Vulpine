@@ -32,6 +32,7 @@ set(VULPINE_HEADERS
     include/Vulpine/Render/Vulkan/VulkanSwapChain.h
     include/Vulpine/Render/Vulkan/VulkanPipeline.h
     include/Vulpine/Render/Vulkan/VulkanBuffer.h
+    include/Vulpine/Render/Vulkan/VulkanDescriptors.h
     include/Vulpine/Scene/CoreComponents.h
     include/Vulpine/Scene/Entity.h
 )
@@ -47,6 +48,7 @@ set(VULPINE_SOURCES
     src/Vulpine/Render/Vulkan/VulkanSwapChain.cpp
     src/Vulpine/Render/Vulkan/VulkanPipeline.cpp
     src/Vulpine/Render/Vulkan/VulkanBuffer.cpp
+    src/Vulpine/Render/Vulkan/VulkanDescriptors.cpp
     src/Vulpine/Scene/Entity.cpp
 )
 
@@ -82,4 +84,11 @@ target_compile_definitions(${PROJECT_NAME}
 
 target_precompile_headers(${PROJECT_NAME}
     PRIVATE include/vppch.h
+)
+
+# Copy Shaders over to build
+file(COPY
+	shaders
+	DESTINATION
+	${CMAKE_BINARY_DIR}
 )

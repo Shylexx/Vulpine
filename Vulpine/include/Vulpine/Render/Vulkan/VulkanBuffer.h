@@ -26,6 +26,12 @@ namespace Vulpine {
     0, 1, 2, 2, 3, 0
   };
 
+  struct UniformBufferObject {
+    glm::mat4 model;
+    glm::mat4 view;
+    glm::mat4 proj;
+  };
+
   class VulkanBuffer {
   public:
     VulkanBuffer(VulkanContext& context);
@@ -34,14 +40,15 @@ namespace Vulpine {
     void CopyTo(VulkanBuffer& dstBuffer, VkDeviceSize size = VK_WHOLE_SIZE);
     void Cleanup();
 
-    VkResult map(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
+    VkResult map();
     void unmap();
 
     VkBuffer buffer() { return m_Buffer; }
+    VmaAllocation allocation() { return m_Allocation; }
     VkDeviceSize size() { return m_BufferSize; }
     void* mappedData() { return m_MappedData; }
 
-    void WriteToBuffer(void* data, VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
+    void WriteToBuffer(void* data, VkDeviceSize dataSize = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
   private:
     VulkanContext& m_Context;
     
