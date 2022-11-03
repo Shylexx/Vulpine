@@ -1,5 +1,5 @@
 #define VMA_IMPLEMENTATION
-#include <vma/vk_mem_alloc.h>
+#include <vk_mem_alloc.h>
 #include <GLFW/glfw3.h>
 
 #include <Vulpine/Render/Vulkan/VulkanContext.h>
@@ -51,6 +51,8 @@ namespace Vulpine
   void VulkanContext::Cleanup()
   {
     vkDestroyCommandPool(m_LogicalDevice, m_CommandPool, nullptr);
+
+    vmaDestroyAllocator(m_Allocator);
 
     vkDestroyDevice(m_LogicalDevice, nullptr);
 

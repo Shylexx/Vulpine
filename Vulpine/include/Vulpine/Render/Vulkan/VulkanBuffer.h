@@ -5,7 +5,6 @@
 #include <vk_mem_alloc.h>
 #include <array>
 #include <vector>
-#include <vulkan/vulkan.h>
 #include <glm/glm.hpp>
 
 namespace Vulpine {
@@ -27,24 +26,26 @@ namespace Vulpine {
   public:
     VulkanBuffer(VulkanContext& context);
 
-    void Init();
+    void Init(VkDeviceSize size, VkBufferUsageFlags usages, VkMemoryPropertyFlags requiredMemProps, VkMemoryPropertyFlags preferredMemProps = 0, VmaAllocationCreateFlags allocFlags = 0);
+    void CopyToAndCleanup(VulkanBuffer& dstBuffer, VkDeviceSize size = VK_WHOLE_SIZE);
     void Cleanup();
 
     VkResult map(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
     void unmap();
 
     VkBuffer buffer() { return m_Buffer; }
+    VkDeviceSize size() { return m_BufferSize; }
     void* mappedData() { return m_MappedData; }
 
-    void WriteToBuffer(void* data, VkDeviceSize size, VkDeviceSize offset = 0);
+    void WriteToBuffer(void* data, VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
   private:
     VulkanContext& m_Context;
     
     VkBuffer m_Buffer = VK_NULL_HANDLE;
-    VkDeviceSize m_BufferSize;
-    VkDeviceMemory m_Memory = VK_NULL_HANDLE;
+    VkDeviceSize m_BufferSize = 0;
+    VmaAllocation m_Allocation = VK_NULL_HANDLE;
     
-    void* m_MappedData;
+    void* m_MappedData = nullptr;
 
     uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
   };

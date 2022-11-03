@@ -10,9 +10,10 @@ namespace Vulpine
 	VulkanRenderer::VulkanRenderer(Window *window)
 	{
 	  m_Context = std::make_unique<VulkanContext>();
-    m_SwapChain = std::make_unique<VulkanSwapChain>(*m_Context);
-    m_Pipeline = std::make_unique<VulkanPipeline>(*m_Context, *m_SwapChain);
-    m_VertexBuffer = std::make_unique<VulkanBuffer>(*m_Context);
+      m_SwapChain = std::make_unique<VulkanSwapChain>(*m_Context);
+      m_Pipeline = std::make_unique<VulkanPipeline>(*m_Context, *m_SwapChain);
+      m_VertexBuffer = std::make_unique<VulkanBuffer>(*m_Context);
+      m_StagingBuffer = std::make_unique<VulkanBuffer>(*m_Context);
 	}
 
 	void VulkanRenderer::Init()
@@ -20,7 +21,21 @@ namespace Vulpine
 	  m_Context->CreateContext();
     m_SwapChain->Init();
     m_Pipeline->Init();
-    m_VertexBuffer->Init();
+    VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
+    m_StagingBuffer->Init(
+        bufferSize, 
+        VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+        0, 
+        VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT);
+    MapVertexesToBuffer(*m_StagingBuffer);
+    m_VertexBuffer->Init(
+        bufferSize,  
+        VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+        0,
+        VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT);
+    m_StagingBuffer->CopyToAndCleanup(*m_VertexBuffer);
     CreateCommandBuffers();
 	}
 
@@ -145,5 +160,16 @@ namespace Vulpine
   void VulkanRenderer::EndRenderPass(VkCommandBuffer commandBuffer)
   {
     vkCmdEndRenderPass(commandBuffer);
+  }
+
+  void VulkanRenderer::MapVertexesToBuffer(VulkanBuffer& buffer) {
+    // Copy the vertex data into the buffer memory
+    if(buffer.map(buffer.size(), 0) == VK_SUCCESS) {
+      //memcpy(m_MappedData, vertices.data(), (size_t)bufferInfo.size);
+      buffer.WriteToBuffer((void*)vertices.data(), buffer.size());
+      buffer.unmap();
+    } else {
+      std::cerr << "Could not map buffer memory" << std::endl;
+    }
   }
 }

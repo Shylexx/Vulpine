@@ -30,8 +30,10 @@ private:
   std::unique_ptr<VulkanSwapChain> m_SwapChain;
   std::unique_ptr<VulkanPipeline> m_Pipeline;
   std::unique_ptr<VulkanBuffer> m_VertexBuffer;
+  std::unique_ptr<VulkanBuffer> m_StagingBuffer;
 
   void CreateCommandBuffers();
+  void MapVertexesToBuffer(VulkanBuffer& buffer);
 
   void BeginRenderPass(VkCommandBuffer commandBuffer);
   void EndRenderPass(VkCommandBuffer commandBuffer);

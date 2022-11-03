@@ -2,7 +2,7 @@
 #define __VK_CONTEXT_H__
 
 #include <Vulpine/Core/Window.h>
-#include <vma/vk_mem_alloc.h>
+#include <vk_mem_alloc.h>
 #include <vector>
 #include <optional>
 
