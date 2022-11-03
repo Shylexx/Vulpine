@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <iterator>
 #include <vector>
+#include <array>
 #include <set>
 #include <unordered_set>
 

@@ -13,7 +13,9 @@ namespace Vulpine
       m_SwapChain = std::make_unique<VulkanSwapChain>(*m_Context);
       m_Pipeline = std::make_unique<VulkanPipeline>(*m_Context, *m_SwapChain);
       m_VertexBuffer = std::make_unique<VulkanBuffer>(*m_Context);
-      m_StagingBuffer = std::make_unique<VulkanBuffer>(*m_Context);
+      m_VertexStagingBuffer = std::make_unique<VulkanBuffer>(*m_Context);
+      m_IndexStagingBuffer = std::make_unique<VulkanBuffer>(*m_Context);
+      m_IndexBuffer = std::make_unique<VulkanBuffer>(*m_Context);
 	}
 
 	void VulkanRenderer::Init()
@@ -21,33 +23,50 @@ namespace Vulpine
 	  m_Context->CreateContext();
     m_SwapChain->Init();
     m_Pipeline->Init();
-    VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
-    m_StagingBuffer->Init(
-        bufferSize, 
+    VkDeviceSize vertexBufferSize = sizeof(vertices[0]) * vertices.size();
+    VkDeviceSize indexBufferSize = sizeof(indices[0]) * indices.size();
+    m_VertexStagingBuffer->Init(
+        vertexBufferSize, 
         VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
         0, 
         VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT);
-    MapVertexesToBuffer(*m_StagingBuffer);
+    MapToBuffer(*m_VertexStagingBuffer, (void*)vertices.data());
+    m_IndexStagingBuffer->Init(
+        indexBufferSize, 
+        VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+        0, 
+        VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT);
+    MapToBuffer(*m_IndexStagingBuffer, (void*)indices.data());
+    m_IndexBuffer->Init(
+      indexBufferSize,
+      VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+      0,
+      VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT);
+    m_IndexStagingBuffer->CopyTo(*m_IndexBuffer, indexBufferSize);
+    m_IndexStagingBuffer->Cleanup();
     m_VertexBuffer->Init(
-        bufferSize,  
+        vertexBufferSize,  
         VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 
         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
         0,
         VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT);
-    m_StagingBuffer->CopyToAndCleanup(*m_VertexBuffer, bufferSize);
+    m_VertexStagingBuffer->CopyTo(*m_VertexBuffer, vertexBufferSize);
+    m_VertexStagingBuffer->Cleanup();
     CreateCommandBuffers();
 	}
 
 	void VulkanRenderer::Cleanup()
 	{
-    vkDeviceWaitIdle(m_Context->logicalDevice());
+      vkDeviceWaitIdle(m_Context->logicalDevice());
 
-    m_SwapChain->Cleanup();
-    m_VertexBuffer->Cleanup();
-    m_Pipeline->Cleanup();
+      m_SwapChain->Cleanup();
+      m_IndexBuffer->Cleanup();
+      m_VertexBuffer->Cleanup();
+      m_Pipeline->Cleanup();
 	  m_Context->Cleanup();
-    
 	}
 
   void VulkanRenderer::CreateCommandBuffers()
@@ -122,7 +141,10 @@ namespace Vulpine
     VkDeviceSize offsets[] = {0};
     vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
-    vkCmdDraw(commandBuffer, static_cast<uint32_t>(vertices.size()), 1, 0, 0);
+    vkCmdBindIndexBuffer(commandBuffer, m_IndexBuffer->buffer(), 0, VK_INDEX_TYPE_UINT16);
+
+    //vkCmdDraw(commandBuffer, static_cast<uint32_t>(vertices.size()), 1, 0, 0);
+    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
   }
 
   void VulkanRenderer::EndRecordCommand(VkCommandBuffer commandBuffer)
@@ -162,14 +184,15 @@ namespace Vulpine
     vkCmdEndRenderPass(commandBuffer);
   }
 
-  void VulkanRenderer::MapVertexesToBuffer(VulkanBuffer& buffer) {
+  void VulkanRenderer::MapToBuffer(VulkanBuffer& buffer, void* data) {
     // Copy the vertex data into the buffer memory
     if(buffer.map(buffer.size(), 0) == VK_SUCCESS) {
       //memcpy(m_MappedData, vertices.data(), (size_t)bufferInfo.size);
-      buffer.WriteToBuffer((void*)vertices.data(), buffer.size());
+      buffer.WriteToBuffer(data, buffer.size());
       buffer.unmap();
     } else {
       std::cerr << "Could not map buffer memory" << std::endl;
     }
   }
+
 }

@@ -3,8 +3,7 @@
 
 #include "Vulpine/Render/Vulkan/VulkanContext.h"
 #include <vk_mem_alloc.h>
-#include <array>
-#include <vector>
+#include "vppch.h"
 #include <glm/glm.hpp>
 
 namespace Vulpine {
@@ -17,9 +16,14 @@ namespace Vulpine {
   };
 
   const std::vector<Vertex> vertices = {
-    {{0.0f, -0.5f}, {0.0f, 1.0f, 1.0f}},
-    {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-    {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+    {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+    {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+    {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+    {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+  };
+
+  const std::vector<uint16_t> indices = {
+    0, 1, 2, 2, 3, 0
   };
 
   class VulkanBuffer {
@@ -27,7 +31,7 @@ namespace Vulpine {
     VulkanBuffer(VulkanContext& context);
 
     void Init(VkDeviceSize size, VkBufferUsageFlags usages, VkMemoryPropertyFlags requiredMemProps, VkMemoryPropertyFlags preferredMemProps = 0, VmaAllocationCreateFlags allocFlags = 0);
-    void CopyToAndCleanup(VulkanBuffer& dstBuffer, VkDeviceSize size = VK_WHOLE_SIZE);
+    void CopyTo(VulkanBuffer& dstBuffer, VkDeviceSize size = VK_WHOLE_SIZE);
     void Cleanup();
 
     VkResult map(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);

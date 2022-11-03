@@ -58,21 +58,22 @@ namespace Vulpine {
 
 		VmaAllocationCreateInfo allocInfo{};
 		allocInfo.usage = VMA_MEMORY_USAGE_AUTO;
-		allocInfo.flags = VMA_ALLOCATION_CREATE_MAPPED_BIT | allocFlags;
+		allocInfo.flags = allocFlags;
 		allocInfo.requiredFlags = requiredFlags;
 		allocInfo.preferredFlags = preferredFlags;
+
+		m_BufferSize = size;
 
 		if (vmaCreateBuffer(m_Context.allocator(), &bufferInfo, &allocInfo, &m_Buffer, &m_Allocation, nullptr) != VK_SUCCESS) {
 			throw std::runtime_error("Failed to Create Buffer!");
 		}
-		m_BufferSize = (size_t)bufferInfo.size;
 	}
 
 	void VulkanBuffer::Cleanup() {
 		vmaDestroyBuffer(m_Context.allocator(), m_Buffer, m_Allocation);
 	}
 
-	void VulkanBuffer::CopyToAndCleanup(VulkanBuffer& dstBuffer, VkDeviceSize size) {
+	void VulkanBuffer::CopyTo(VulkanBuffer& dstBuffer, VkDeviceSize size) {
 		VkCommandBufferAllocateInfo bufAllocInfo{};
 		bufAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 		bufAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
@@ -104,8 +105,6 @@ namespace Vulpine {
 		vkQueueWaitIdle(m_Context.graphicsQueue());
 
 		vkFreeCommandBuffers(m_Context.logicalDevice(), m_Context.commandPool(), 1, &commandBuffer);
-
-		Cleanup();
 	}
 
 	VkResult VulkanBuffer::map(VkDeviceSize size, VkDeviceSize offset) {
