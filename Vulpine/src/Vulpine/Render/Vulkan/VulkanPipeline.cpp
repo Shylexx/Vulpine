@@ -27,8 +27,8 @@ namespace Vulpine
   void VulkanPipeline::CreatePipeline(VkDescriptorSetLayout descriptorLayout)
   {
 #ifdef __linux__
-    auto vertShaderCode = ReadFile("../../shaders/vert.spv");
-    auto fragShaderCode = ReadFile("../../shaders/frag.spv");
+    auto vertShaderCode = ReadFile("../shaders/ubovert.spv");
+    auto fragShaderCode = ReadFile("../shaders/ubofrag.spv");
 #else 
     auto vertShaderCode = ReadFile("..\\shaders\\ubovert.spv");
     auto fragShaderCode = ReadFile("..\\shaders\\ubofrag.spv");
@@ -176,7 +176,7 @@ namespace Vulpine
     std::ifstream file(filepath, std::ios::ate | std::ios::binary);
 
     if(!file.is_open()) {
-      throw std::runtime_error("Failed to Open File!");
+      throw std::runtime_error("Failed to Open File: " + filepath);
     }
 
     size_t fileSize = (size_t)file.tellg();
