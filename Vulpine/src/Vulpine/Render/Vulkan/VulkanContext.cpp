@@ -31,8 +31,14 @@ namespace Vulpine
 
   void VulkanContext::CreateContext()
   {
+    std::cout << "Load Vulkan from Volk" << std::endl;
+    if(volkInitialize() != VK_SUCCESS) {
+      std::cout << "Failed to load Vulkan with Volk!" << std::endl;
+    }
     std::cout << "Create Instance" << std::endl;
     CreateInstance();
+    std::cout << "Loading Vulkan Instance into Volk" << std::endl;
+    volkLoadInstance(m_Instance);
     std::cout << "Setup Debug Messenger" << std::endl;
     SetupDebugMessenger();
     std::cout << "Create Surface" << std::endl;
@@ -42,6 +48,8 @@ namespace Vulpine
     PickPhysicalDevice();
     std::cout << "Create Logical Device" << std::endl;
     CreateLogicalDevice();
+    std::cout << "Load Vulkan entrypoints from the driver" << std::endl;
+    volkLoadDevice(m_LogicalDevice);
     std::cout << "Create Command Pool" << std::endl;
     CreateCommandPool();
     std::cout << "Create Allocator" << std::endl;

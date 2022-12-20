@@ -2,7 +2,7 @@
 #define __VP_WINDOW_H__
 
 #include <sstream>
-#include <vulkan/vulkan.h>
+#include <volk.h>
 #include <GLFW/glfw3.h>
 
 

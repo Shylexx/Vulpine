@@ -3,12 +3,17 @@ project(Vulpine VERSION 0.0.1 LANGUAGES CXX C)
 
 set(CMAKE_CXX_STANDARD 20)
 
+if(WIN32)
+  set(VOLK_STATIC_DEFINES VK_USE_PLATFORM_WIN32_KHR)
+endif()
+
 # add external libraries
 add_subdirectory(external/glm)
 add_subdirectory(external/glfw)
 add_subdirectory(external)
 add_subdirectory(external/entt)
 add_subdirectory(external/VMA)
+add_subdirectory(external/volk)
 
 # Add Vulkan
 find_package(Vulkan REQUIRED)
@@ -63,6 +68,7 @@ target_include_directories(${PROJECT_NAME}
     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
     glm
     glfw
+    volk
     VMA
     external/imgui
     ${Vulkan_INCLUDE_DIRS}
@@ -74,6 +80,7 @@ target_link_libraries(${PROJECT_NAME}
     glfw
     ImGui
     VulkanMemoryAllocator
+    volk
     ${Vulkan_LIBRARIES}
     EnTT::EnTT
 )

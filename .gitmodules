@@ -13,3 +13,6 @@
 [submodule "Vulpine/external/VMA"]
 	path = Vulpine/external/VMA
 	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
+[submodule "Vulpine/external/volk"]
+	path = Vulpine/external/volk
+	url = https://github.com/zeux/volk.git
